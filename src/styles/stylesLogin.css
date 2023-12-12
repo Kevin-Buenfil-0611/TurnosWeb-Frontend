@@ -1,0 +1,60 @@
+.containerLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tituloContainer {
+    display: flex;
+    width: 100%;
+    background-color: #FA770F;
+    margin-bottom: 30px;
+    align-items: center;
+    justify-content: center;
+    height: 7rem;
+}
+
+.encabezadoText {
+    text-align: left;
+    width: 100%;
+    color: antiquewhite;
+    margin-left: 20px;
+    font-family: "Nunito";
+}
+
+.logoMunicipio {
+    display: block;
+    margin-left: auto;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 20px;
+}
+
+.loginPrincipal {
+    background-color: #FC8B0D;
+    width: 400px;
+    height: 300px;
+    border-radius: 5%;
+    border: solid 0.2em;
+    border-color: orangered;
+    box-shadow: 5px 5px 5px 5px lightgray;
+
+}
+
+.tittle {
+    text-align: center;
+}
+
+.containerAccess {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.usernameContainer {
+    padding: 10px;
+}
+
+.passwordClassname {
+    padding: 10px;
+}

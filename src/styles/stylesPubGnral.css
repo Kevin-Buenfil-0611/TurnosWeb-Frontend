@@ -1,0 +1,65 @@
+.containerPrincipal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.encabezadoContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-color: #FA770F;
+    margin-bottom: 30px;
+    height: 7rem;
+}
+
+.encabezadoText {
+    text-align: left;
+    width: 100%;
+    color: antiquewhite;
+    margin-left: 20px;
+    font-family: "Nunito";
+}
+
+.logoMunicipio {
+    width: 7rem;
+    height: 7rem;
+}
+
+.tittleContainer {
+    background-color: #FC8B0D;
+    border-radius: 5%;
+    border: solid 0.2em;
+    border-color: orangered;
+    box-shadow: 5px 5px 5px 5px lightgray;
+    margin-bottom: 30px;
+}
+
+.title {
+    color: aliceblue;
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+}
+
+.areasContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    margin-bottom: 35px;
+}
+
+.buttonAreas {
+    margin: 10px 10px;
+    border-radius: 10%;
+    background-color: #f8a547;
+    border: solid 0.2em;
+    border-color: rgb(218, 58, 0);
+}
+
+.textAreas {
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 30px;
+    color: aliceblue;
+}
