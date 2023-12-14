@@ -1,20 +1,18 @@
-.containerPrincipal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .encabezadoContainer {
     display: flex;
+    background-color: #FA770F;
+    margin-bottom: 20px;
     align-items: center;
     justify-content: center;
     width: 100%;
-    background-color: #FA770F;
-    margin-bottom: 30px;
-    height: 7rem;
 }
 
-.encabezadoText {
+.clockIcon {
+    font-size: calc(1.3rem + 1.5vw);
+    margin-left: 2rem;
+}
+
+.tituloText {
     text-align: left;
     width: 100%;
     color: antiquewhite;
@@ -27,26 +25,21 @@
     height: 7rem;
 }
 
-.tittleContainer {
-    background-color: #FC8B0D;
-    border-radius: 5%;
-    border: solid 0.2em;
-    border-color: orangered;
-    box-shadow: 5px 5px 5px 5px lightgray;
-    margin-bottom: 30px;
-}
-
-.title {
-    color: aliceblue;
-    font-family: 'Times New Roman', Times, serif;
-    text-align: center;
+.centrar {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .areasContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    margin-bottom: 35px;
+    background-color: #FC8B0D;
+    border-radius: 3%;
+    border: solid 0.2em;
+    border-color: orangered;
+    box-shadow: 5px 5px 5px 5px lightgray;
 }
 
 .buttonAreas {
