@@ -20,10 +20,6 @@
     font-family: "Nunito";
 }
 
-.logoMunicipio {
-    width: 7rem;
-    height: 7rem;
-}
 
 .centrar {
     flex-grow: 1;

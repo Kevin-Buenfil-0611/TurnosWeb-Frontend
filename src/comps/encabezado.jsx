@@ -1,12 +1,22 @@
-import react from react
+import React from "react";
+import LogoAyuntamiento from "./LogoAyuntamiento.webp";
 
 function Encabezado(props) {
-    return (<nav class="navbar bg-body-tertiary" className="encabezadoContainer">
-        <h1 className="clockIcon"><FontAwesomeIcon icon={props.nombreIcono} style={{ color: "#ffffff", }} /> </h1>
-        <p class="h1" style={{
+
+    return (<nav class="navbar d-flex" style={{
+        backgroundColor: "#FA770F"
+    }}>
+        <i class={props.nombreIcon} style={{
+            color: "#ffffff", fontSize: "calc(1.6rem + 1.6vw)", marginLeft: 15
+        }}></i>
+        <p className="h1" style={{
             fontWeight: "bold", color: "white",
-            textAlign: "left", marginLeft: 10, fontFamily: "Nunito"
-        }}>{props.titulo}</p>
-        <img src={logoMunicipio} alt="Error" className="logoMunicipio" />
+            fontFamily: "Nunito"
+        }}> {props.textoTitulo}</p>
+        <img src={LogoAyuntamiento} class="img-fluid" alt="Error" style={{
+            width: 100,
+            height: 100, marginRight: 15,
+        }} />
     </nav>)
 }
+export default Encabezado;

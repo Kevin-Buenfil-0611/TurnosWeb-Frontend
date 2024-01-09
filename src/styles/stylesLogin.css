@@ -1,24 +1,3 @@
-.tituloContainer {
-    display: flex;
-    background-color: #FA770F;
-    margin-bottom: 20px;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.homeIcon {
-    font-size: calc(1.5rem + 1.5vw);
-}
-
-.logoMunicipio {
-    display: block;
-    margin-left: auto;
-    width: 150px;
-    height: 150px;
-    margin-bottom: 20px;
-}
-
 .centrarLogin {
     flex-grow: 1;
     display: flex;
@@ -47,7 +26,7 @@
 .loginButton {
     margin: 10px 10px;
     border-radius: 10%;
-    color: lightgray;
+    color: white;
     font-weight: bold;
     background-color: #ff9821;
     border: solid 0.2em;
