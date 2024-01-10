@@ -3,20 +3,20 @@ import LogoAyuntamiento from "./LogoAyuntamiento.webp";
 
 function Encabezado(props) {
 
-    return (<nav class="navbar d-flex" style={{
+    return (<div class="d-flex justify-content-between align-items-center" style={{
         backgroundColor: "#FA770F"
     }}>
-        <i class={props.nombreIcon} style={{
-            color: "#ffffff", fontSize: "calc(1.6rem + 1.6vw)", marginLeft: 15
+        <i className={props.nombreIcon} style={{
+            color: "#ffffff", fontSize: "calc(1.4rem + 1.4vw)", marginLeft: 10
         }}></i>
         <p className="h1" style={{
             fontWeight: "bold", color: "white",
-            fontFamily: "Nunito"
+            fontFamily: "Segoe UI", textAlign: "center",
+            marginLeft: 10, marginRight: 10
         }}> {props.textoTitulo}</p>
-        <img src={LogoAyuntamiento} class="img-fluid" alt="Error" style={{
-            width: 100,
-            height: 100, marginRight: 15,
+        <img src={LogoAyuntamiento} className="img-fluid" alt="Error" style={{
+            marginRight: 10, width: "auto"
         }} />
-    </nav>)
+    </div>)
 }
 export default Encabezado;
