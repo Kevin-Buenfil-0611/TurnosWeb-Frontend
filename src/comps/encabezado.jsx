@@ -3,7 +3,7 @@ import LogoAyuntamiento from "./LogoAyuntamiento.webp";
 
 function Encabezado(props) {
 
-    return (<div class="d-flex justify-content-between align-items-center" style={{
+    return (<div className="d-flex justify-content-between align-items-center" style={{
         backgroundColor: "#FA770F"
     }}>
         <i className={props.nombreIcon} style={{

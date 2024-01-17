@@ -10,7 +10,6 @@ const Caja = () => {
         const turnosEnEspera = listaTurnos.map(turnos =>
             <TextoTitulo tamaño={"h5"} texto={turnos} color="white"></TextoTitulo>
         );
-
         return turnosEnEspera;
     }
     return (

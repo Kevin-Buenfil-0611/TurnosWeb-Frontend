@@ -1,0 +1,42 @@
+/* Color cuando no está seleccionado el botón*/
+.nav-pills .pill-1 .nav-link:not(.active) {
+    background-color: rgba(255, 119, 15, 0.5);
+    color: white;
+}
+
+.nav-pills .pill-2 .nav-link:not(.active) {
+    background-color: rgba(255, 119, 15, 0.5);
+    color: white;
+}
+
+.nav-pills .pill-3 .nav-link:not(.active) {
+    background-color: rgba(255, 119, 15, 0.5);
+    color: white;
+}
+
+
+/* Color cuando está seleccionado el botón */
+.nav-pills .pill-1 .nav-link {
+    background-color: rgba(255, 119, 15);
+}
+
+.nav-pills .pill-2 .nav-link {
+    background-color: rgba(255, 119, 15);
+}
+
+.nav-pills .pill-3 .nav-link {
+    background-color: rgba(255, 119, 15);
+}
+
+/* Margen entre los botones */
+.nav-pills .pill-1 {
+    margin: 0 10px 0 10px;
+}
+
+.nav-pills .pill-2 {
+    margin: 0 10px 0 10px;
+}
+
+.nav-pills .pill-3 {
+    margin: 0 10px 0 10px;
+}

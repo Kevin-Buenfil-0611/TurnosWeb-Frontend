@@ -105,18 +105,18 @@ const CompShowUsuarios = () => {
 
 
             {/* Modal de Agregar Área */}
-            <div class="modal fade" id="modal-create-usuario" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
+            <div className="modal fade" id="modal-create-usuario" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
                             {/* Título del Modal */}
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Menú Crear Usuario</h1>
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Crear Usuario</h1>
                             {/* Botón X de cerrar */}
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
                                 onClick={() => getUsuarios()}></button>
                         </div>
                         {/* Formulario para agregar Área */}
-                        <div class="modal-body">
+                        <div className="modal-body">
                             {/* Input Nombre del Usuario */}
                             <form onSubmit={store}>
                                 <input
@@ -137,15 +137,15 @@ const CompShowUsuarios = () => {
                                     className="form-control"
                                 />
                                 {/* Selección del área */}
-                                <div class="form-floating" style={{ marginTop: 20 }}>
-                                    <select class="form-select" id="areasSelect" aria-label="Floating label select example"
+                                <div className="form-floating" style={{ marginTop: 20 }}>
+                                    <select className="form-select" id="areasSelect" aria-label="Floating label select example"
                                         onChange={(e) => setFk_Idarea(e.target.value)}>
-                                        <option selected>Selecciona un Área</option>
+                                        <option defaultValue={''}>Selecciona un Área</option>
                                         {areas.map((area) => (
-                                            <option value={area.id}>{area.nombre_area}</option>
+                                            <option value={area.id} key={area.id}>{area.nombre_area}</option>
                                         ))}
                                     </select>
-                                    <label for="areasSelect">Área Seleccionada</label>
+                                    <label htmlFor="areasSelect">Área Seleccionada</label>
                                 </div>
 
                                 {/* Botón Guardar */}
@@ -158,9 +158,9 @@ const CompShowUsuarios = () => {
                             </form>
 
                         </div>
-                        <div class="modal-footer">
+                        <div className="modal-footer">
                             {/* Modal de Cerrar */}
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
                                 onClick={() => getUsuarios()}>Cerrar</button>
                         </div>
                     </div>

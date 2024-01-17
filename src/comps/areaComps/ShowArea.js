@@ -83,17 +83,17 @@ const CompShowAreas = () => {
             </div>
 
             {/* Modal de Agregar Área */}
-            <div class="modal fade" id="modal-create-area" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
+            <div className="modal fade" id="modal-create-area" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
                             {/* Título del Modal */}
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Menú Crear Área</h1>
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Crear Área</h1>
                             {/* Botón X de cerrar */}
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
                                 onClick={() => getAreas()}></button>
                         </div>
-                        <div class="modal-body">
+                        <div className="modal-body">
                             {/* Formulario para agregar Área */}
                             <form onSubmit={store}>
                                 <input
@@ -115,9 +115,9 @@ const CompShowAreas = () => {
 
                             </form>
                         </div>
-                        <div class="modal-footer">
+                        <div className="modal-footer">
                             {/* Botón de Cerrar */}
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
                                 onClick={() => getAreas()}>Cerrar</button>
                         </div>
                     </div>

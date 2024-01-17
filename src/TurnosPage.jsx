@@ -4,6 +4,7 @@ import TextoTitulo from "./comps/textoTitulos";
 
 const TurnosPage = () => {
     //Leer los turnos en espera
+    //Volver a checar si aquí realizo el map
     function esperaTurnos() {
         const listaTurnos = ["Area1", "Area2", "Area3", "Area4"];
         const turnosEnEspera = listaTurnos.map(turnos =>
@@ -19,11 +20,11 @@ const TurnosPage = () => {
 
             <div className="d-flex " style={{ marginTop: 10 }}>
                 {/* Lista de los turnos que se están atendiendo */}
-                <div className="col-7">
+                <div className="col-7 ">
                     <div className="d-flex justify-content-center" >
                         <TextoTitulo tamaño={"h1"} texto="Turnos Atendiendo" color="black"></TextoTitulo>
                     </div>
-                    <div className="d-flex" style={{ marginLeft: 5 }}>
+                    <div className="d-flex justify-content-center" style={{ marginLeft: 5 }}>
                         <div className="table-tesponsive">
                             <table className="table table-bordered">
                                 <thead className="thead-dark">
@@ -32,6 +33,11 @@ const TurnosPage = () => {
                                         <th scope="col"> Caja</th>
                                         <th scope="col"> Turno</th>
                                     </tr>
+                                    {/* Hacer un map para crear las filas
+                                    dependiendo del número de cajas y que muestre el turno que
+                                    se está atendendo (ordenado por cajas)
+                                    Checar si un turno debe estar unido a un area o a una caja
+                                    en  la base de datos */}
                                 </thead>
                                 <tbody>
                                     <tr>
