@@ -6,7 +6,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 const URI = 'http://localhost:8000/areas/'
-const PantallaPublico = () => {
+const Mostrador = () => {
 
     //Procedimiento para mostrar todas las Áreas
     const [areas, setAreas] = useState([])
@@ -42,4 +42,4 @@ const PantallaPublico = () => {
     )
 }
 
-export default PantallaPublico;
+export default Mostrador;

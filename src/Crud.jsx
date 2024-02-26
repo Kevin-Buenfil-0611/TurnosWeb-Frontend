@@ -2,7 +2,9 @@ import Encabezado from "./comps/encabezado";
 import CompShowAreas from "./comps/areaComps/ShowArea";
 import CompShowUsuarios from './comps/usuarioComps/ShowUsuarios';
 import CompShowCajas from './comps/cajaComps/ShowCaja';
+import CompShowPermisos from "./comps/permisosComps/ShowPermisos";
 import "./styles/stylesCrud.css"
+
 
 const Crud = () => {
 
@@ -18,17 +20,26 @@ const Crud = () => {
                 <li className="nav-item pill-1" role="presentation">
                     <button className="nav-link active" id="pills-areas-tab" data-bs-toggle="pill" data-bs-target="#pills-area"
                         type="button" role="tab" aria-controls="pills-area" aria-selected="true"
+                        style={{ margin: "3px 5px 3px 5px" }}
                     >Áreas</button>
                 </li>
                 <li className="nav-item pill-2" role="presentation">
                     <button className="nav-link" id="pills-caja-tab" data-bs-toggle="pill" data-bs-target="#pills-caja"
                         type="button" role="tab" aria-controls="pills-caja" aria-selected="false"
+                        style={{ margin: "3px 5px 3px 5px" }}
                     >Cajas</button>
                 </li>
                 <li className="nav-item pill-3" role="presentation">
                     <button className="nav-link" id="pills-usuarios-tab" data-bs-toggle="pill" data-bs-target="#pills-usuarios"
                         type="button" role="tab" aria-controls="pills-usuarios" aria-selected="false"
+                        style={{ margin: "3px 5px 3px 5px" }}
                     >Usuarios</button>
+                </li>
+                <li className="nav-item pill-4" role="presentation">
+                    <button className="nav-link" id="pills-permisos-tab" data-bs-toggle="pill" data-bs-target="#pills-permisos"
+                        type="button" role="tab" aria-controls="pills-permisos" aria-selected="false"
+                        style={{ margin: "3px 5px 3px 5px" }}
+                    >Permisos</button>
                 </li>
 
             </ul>
@@ -49,7 +60,11 @@ const Crud = () => {
                     aria-labelledby="pills-usuarios-tab" tabIndex="0">
                     <CompShowUsuarios></CompShowUsuarios>
                 </div>
-
+                {/* Pestaña tabla Permisos */}
+                <div className="tab-pane fade" id="pills-permisos" role="tabpanel"
+                    aria-labelledby="pills-permisos-tab" tabIndex="0">
+                    <CompShowPermisos></CompShowPermisos>
+                </div>
             </div>
         </>
     );

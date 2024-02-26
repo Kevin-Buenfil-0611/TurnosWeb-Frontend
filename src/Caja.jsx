@@ -2,6 +2,8 @@ import React from "react";
 import './styles/stylesCaja.css';
 import Encabezado from "./comps/encabezado";
 import TextoTitulo from "./comps/textoTitulos";
+import { Popconfirm } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const Caja = () => {
     //Leer los turnos en espera
@@ -61,25 +63,39 @@ const Caja = () => {
                                             }}>Llamar Nuevamente</button>
                                     </div>
                                     <div className="col-sm-12 col-md-6">
-                                        <button type="button" className="btn btn-warning" style={{
-                                            fontWeight: "bold", marginBottom: 20,
-                                            marginLeft: 10, marginRight: 20, color: "white",
-                                            borderradius: "2rem", border: "solid 0.2em", borderColor: "orangered",
-                                            backgroundColor: "#ff9821"
-
-                                        }}>Finalizar Turno</button>
+                                        <Popconfirm title='Finalizar Turno'
+                                            description="Confirma que el turno haya sido concluido"
+                                            onConfirm={() => console.log("Turno concluido")}
+                                            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                                            okButtonProps={{ style: { backgroundColor: '#FA770F', color: 'white' } }}
+                                        >
+                                            <button type="button" className="btn btn-warning" style={{
+                                                fontWeight: "bold", marginBottom: 20,
+                                                marginLeft: 10, marginRight: 20, color: "white",
+                                                borderradius: "2rem", border: "solid 0.2em", borderColor: "orangered",
+                                                backgroundColor: "#ff9821"
+                                            }}>Finalizar Turno</button>
+                                        </Popconfirm>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         {/* Botón para llamar turno */}
                         <div className="d-flex justify-content-center">
-                            <button type="button" className="btn btn-warning" style={{
-                                marginTop: 30, marginBottom: 10,
-                                fontWeight: "bold", color: "white",
-                                borderradius: "2rem", border: "solid 0.2em", borderColor: "orangered",
-                                backgroundColor: "#ff9821"
-                            }}>Llamar nuevo turno</button>
+                            <Popconfirm title='Llamar nuevo turno'
+                                description="¿Estás seguro de llamar otro turno? El turno actual será finalizado automáticamente"
+                                onConfirm={() => console.log("Turno concluido")}
+                                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                                okButtonProps={{ style: { backgroundColor: '#FA770F', color: 'white' } }}
+                            >
+                                <button type="button" className="btn btn-warning" style={{
+                                    marginTop: 30, marginBottom: 10,
+                                    fontWeight: "bold", color: "white",
+                                    borderradius: "2rem", border: "solid 0.2em", borderColor: "orangered",
+                                    backgroundColor: "#ff9821"
+                                }}>Llamar nuevo turno</button>
+                            </Popconfirm>
+
                         </div>
                     </div>
                 </div>
