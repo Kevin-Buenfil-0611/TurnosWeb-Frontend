@@ -28,6 +28,7 @@
     justify-content: center;
     margin-left: 15px;
     margin-right: 15px;
+    margin-top: 20px;
 }
 
 .areasContainer {
@@ -39,16 +40,27 @@
 }
 
 .buttonAreas {
-    margin: 10px 10px;
+    margin: 1vh 1vw;
     border-radius: 10%;
-    background-color: #f8a547;
+    background-color: #f88f38;
     border: solid 0.2em;
     border-color: rgb(218, 58, 0);
 }
 
 .textAreas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
     font-family: 'Times New Roman', Times, serif;
-    font-size: 30px;
+    font-size: 2vw;
+    padding: 1vh 1vw;
     color: aliceblue;
+}
+
+.grid {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+    align-items: center;
 }

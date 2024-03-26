@@ -1,94 +1,140 @@
-import React, { useState } from "react";
-import Encabezado from "./comps/encabezado";
-import TextoTitulo from "./comps/textoTitulos";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import LogoAyuntamiento from "./comps/LogoAyuntamiento.webp"
+import ReproductorVideo from "./comps/ReproductorVideo";
+
+const URI = 'http://localhost:8000/turnos/';
+const URITurno = 'http://localhost:8000/turnos/siguiente'
+
 
 const TurnosPage = () => {
-    //Leer los turnos en espera
-    //Volver a checar si aquí realizo el map
-    function esperaTurnos() {
-        const listaTurnos = ["Area1", "Area2", "Area3", "Area4"];
-        const turnosEnEspera = listaTurnos.map(turnos =>
-            <TextoTitulo tamaño={"h5"} texto={turnos} color="white"></TextoTitulo>
+    //Procedimiento para mostrar todas los Turnos
+    const [turnos, setTurnos] = useState([])
+    useEffect(() => {
+        getTurnos()
+    }, [])
+
+    const getTurnos = async () => {
+        const res = await axios.get(URI)
+        setTurnos(res.data)
+    }
+    //Procedimiento para mostrar todas los Turnos
+    const [turnoNuevo, setTurnoNuevo] = useState([])
+    useEffect(() => {
+        getTurnoNuevo()
+    }, [])
+
+    const getTurnoNuevo = async () => {
+        const resTurno = await axios.get(URITurno)
+        setTurnoNuevo(resTurno.data)
+    }
+    //Información del nuevo turno
+    function mostrarInformacionTurno() {
+        const textoTurno = "Turno " + turnoNuevo.turno_id;
+
+        const NumeroDelTurno = (
+            <p style={{
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontSize: '10vh',
+                color: 'white'
+            }}>{textoTurno}</p>
         );
-        return turnosEnEspera;
+
+        const DatosDelTurno = (
+            <p style={{
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontSize: '10vh',
+                color: 'white'
+            }}>{turnoNuevo.nombre_area}</p>
+        );
+
+        const CajaDelTurno = (
+            <p style={{
+                fontWeight: 'bold',
+                textAlign: 'center',
+                fontSize: '10vh',
+                color: 'white'
+            }}>{turnoNuevo.nombre_area}</p>
+        );
+
+        return (
+            <div>
+                {NumeroDelTurno}
+                {DatosDelTurno}
+            </div>
+        );
     }
 
     return (
         <>
 
-            <Encabezado nombreIcon="bi bi-ticket-detailed-fill" textoTitulo="Lista de Turnos"></Encabezado>
-
-            <div className="d-flex " style={{ marginTop: 10 }}>
-                {/* Lista de los turnos que se están atendiendo */}
-                <div className="col-7 ">
-                    <div className="d-flex justify-content-center" >
-                        <TextoTitulo tamaño={"h1"} texto="Turnos Atendiendo" color="black"></TextoTitulo>
-                    </div>
-                    <div className="d-flex justify-content-center" style={{ marginLeft: 5 }}>
-                        <div className="table-tesponsive">
-                            <table className="table table-bordered">
-                                <thead className="thead-dark">
-                                    <tr>
-                                        <th scope="col"> Area</th>
-                                        <th scope="col"> Caja</th>
-                                        <th scope="col"> Turno</th>
-                                    </tr>
-                                    {/* Hacer un map para crear las filas
-                                    dependiendo del número de cajas y que muestre el turno que
-                                    se está atendendo (ordenado por cajas)
-                                    Checar si un turno debe estar unido a un area o a una caja
-                                    en  la base de datos */}
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">Catastro </th>
-                                        <td>1</td>
-                                        <td>13</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Tesoreria </th>
-                                        <td>2</td>
-                                        <td>14</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Recursos Humanos</th>
-                                        <td>3</td>
-                                        <td>15</td>
-                                    </tr>
-                                </tbody>
-
-                            </table>
+            <div className="d-flex " style={{ height: '100%' }}>
+                <div className="col-6" style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div className="d-flex">
+                        {/* Este div contiene la imagen */}
+                        <div className="col-3 d-flex justify-content-center align-items-center">
+                            <img src={LogoAyuntamiento} className="img-fluid" alt="Error" style={{
+                                maxWidth: "20vw", height: "20vh", borderRadius: "50%"
+                            }} />
                         </div>
-
+                        {/* Este div contiene los textos */}
+                        <div className="col-9">
+                            <div className="d-flex justify-content-center" style={{
+                                backgroundColor: "#FC8B0D", borderRadius: "2rem",
+                                border: "solid 0.2rem", borderColor: "orangered",
+                                flexDirection: "column", margin: "0px 10px 0px 10px"
+                            }}>
+                                {/* <p style={{
+                                    fontWeight: 'bold', textAlign: 'center',
+                                    fontSize: '60px', color: "white"
+                                }}>
+                                    Turno Actual
+                                </p> */}
+                                <div>{mostrarInformacionTurno()}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Videos de publicidad */}
+                    <div className="d-flex justify-content-center" style={{ width: '100%' }}>
+                        <ReproductorVideo />
                     </div>
                 </div>
-                {/* Lista de los turnos en Espera */}
-                <div className="col-5"  >
-                    <div className="d-flex justify-content-center" >
-                        <TextoTitulo tamaño={"h1"} texto="Turnos en Espera" color="black"></TextoTitulo>
-                    </div>
-                    <div className="d-flex justify-content-center" style={{
-                        backgroundColor: "#FC8B0D", borderRadius: "2rem",
-                        border: "solid 0.2rem", borderColor: "orangered",
-                        flexDirection: "column", margin: "5px 10px 5px 10px"
-                    }}>
-                        <TextoTitulo tamaño={"h3"} texto="Catastro" color="white"></TextoTitulo>
-                        <div>{esperaTurnos()}</div>
-                    </div>
-                    <div className="d-flex justify-content-center" style={{
-                        backgroundColor: "#FC8B0D", borderRadius: "2rem",
-                        border: "solid 0.2rem", borderColor: "orangered",
-                        flexDirection: "column", margin: "5px 10px 5px 10px"
-                    }}>
-                        <TextoTitulo tamaño={"h3"} texto="Tesorería" color="white"></TextoTitulo>
-                        <div>{esperaTurnos()}</div>
-                    </div>
 
-                </div>
+
+
+
+                {/* Lista de los turnos en Espera 
+            Preguntar si se crea un nuevo campo en la tabla cajas llamado Módulo
+            Ordena los turnos por fecha, preguntar si cada área debe tener su
+            número de turno interno */}
+                <div className="col-6" >
+                    <table className="table table-striped table-bordered border-black align-middle">
+                        <thead className="table-dark">
+                            {/* Encabezados de la tabla */}
+                            <tr>
+                                <th scope="col">Turno</th>
+                                <th scope="col">Área</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {/* Ciclo para obtener la información de la DB */}
+                            {turnos ? (
+                                turnos.map((turno) => (
+                                    <tr key={turno.id}>
+                                        <th scope="row">{turno.nombre_area}</th>
+                                        <td>{turno.id}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <></>
+                            )}
+                        </tbody>
+                    </table>
+                </div >
             </div>
-
-
-        </>
+        </ >
     )
 };
 export default TurnosPage;

@@ -1,16 +1,19 @@
 import axios from "axios";
 import React from "react";
-import TextoTitulo from "../textoTitulos";
+import TextoTitulo from "./textoTitulos";
+import moment from "moment";
 import { useState, useEffect } from "react";
-import { Input, Autocomplete, AutocompleteItem, Button, CheckboxGroup, Checkbox } from "@nextui-org/react";
+import { Input, Button, CheckboxGroup, Checkbox } from "@nextui-org/react";
 import { Popconfirm } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 //Dirección del backend para acceder a los métodos de la base de datos
 const URI = 'http://localhost:8000/usuarios/';
 const URIareas = 'http://localhost:8000/areas/';
+const URIcajas = 'http://localhost:8000/cajas/';
 const URIpermisos = 'http://localhost:8000/permisos/';
 const URIpermisosusuarios = 'http://localhost:8000/permisousuario/';
+const URIcajausuarios = 'http://localhost:8000/cajausuario/'
 const URIdatospers = 'http://localhost:8000/datospers/';
 
 const CompShowUsuarios = () => {
@@ -59,6 +62,17 @@ const CompShowUsuarios = () => {
         setDatospers(res.data)
     }
 
+    //Procedimiento para mostrar todas las cajas
+    const [cajas, setCajas] = useState([])
+    useEffect(() => {
+        getCajas()
+    }, [])
+
+    const getCajas = async () => {
+        const res = await axios.get(URIcajas)
+        setCajas(res.data)
+    }
+
     //Procedimiento para eliminar un Usuario
     const deleteUsuario = async (id) => {
         await axios.put(`${URI}${id}`, {
@@ -72,7 +86,6 @@ const CompShowUsuarios = () => {
     const [nombre_usuario, setNombre_usuario] = useState('');
     const [contraseña, setContraseña] = useState('');
     const [contraseñaDos, setContraseñaDos] = useState('');
-    const [fk_Idarea, setFk_Idarea] = useState('');
     const [nombre_personal, setNombrePersonal] = useState('');
     const [primer_apellido, setPrimerApellido] = useState('');
     const [segundo_apellido, setSegundoApellido] = useState('');
@@ -80,12 +93,15 @@ const CompShowUsuarios = () => {
 
     const estatus = '1';
     const store = async (e) => {
+        const usuarioCreate = localStorage.getItem("usuario");
+        const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         await axios.post(URI, {
             nombre_usuario: nombre_usuario, contraseña: contraseña,
-            estatus: estatus, fk_idarea: fk_Idarea, nombre_personal: nombre_personal,
+            estatus: estatus, nombre_personal: nombre_personal,
             primer_apellido: primer_apellido, segundo_apellido: segundo_apellido,
-            telefono: telefono
+            telefono: telefono, create_by: usuarioCreate,
+            create_at: fechaActualCreate
         });
         getUsuarios();
         getDatospers();
@@ -96,9 +112,6 @@ const CompShowUsuarios = () => {
         setNombre_usuario('');
         setContraseña('');
         setContraseñaDos('');
-        setFk_Idarea('');
-        setTouched(false);
-        setInputArea('');
         setNombrePersonal('');
         setPrimerApellido('');
         setSegundoApellido('');
@@ -130,21 +143,6 @@ const CompShowUsuarios = () => {
         return validateContraseñaDos(contraseña, contraseñaDos);
     }, [contraseña, contraseñaDos]);
 
-    // Validar el Select para que marque un área
-    const [touched, setTouched] = useState(false);
-    const [inputArea, setInputArea] = useState('');
-
-    const handleSelectionChange = (value) => {
-        setFk_Idarea(value);
-        setTouched(true);
-    };
-
-    const onInputChange = (inputArea) => {
-        setInputArea(inputArea);
-        setTouched(true);
-    };
-    const isValidArea = touched && inputArea;
-
     // Validar la información del input de Nombre personal
     const validateNombrePersonal = (nombre_personal) => nombre_personal.trim() !== '';
     const isValidNombrePersonal = React.useMemo(() => {
@@ -174,7 +172,7 @@ const CompShowUsuarios = () => {
 
     //Validar que el Input de Usuario, contraseña y el de las Áreas sean true y mostrar el botón guardar
     const isValidForm = isValidUser === true && isValidPassword === true &&
-        isValidPasswordDos === true && isValidArea && isValidNombrePersonal === true
+        isValidPasswordDos === true && isValidNombrePersonal === true
         && isValidPrimerApellido === true && isValidSegundoApellido === true
         && isValidTelefono === true;
 
@@ -193,10 +191,12 @@ const CompShowUsuarios = () => {
     }
     //Procedimiento para crear/modificar los permisos por usuario
     const modify = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         const InfoNuevaPermisos = await axios.put(`${URIpermisosusuarios}${idUsuarioMod}`, {
-            permisosMod: nuevosPermisos,
-            usuarios_id: idUsuarioMod
+            permisosMod: nuevosPermisos, usuarios_id: idUsuarioMod,
+            update_by: usuarioModify, update_at: fechaActualModify
         });
         setPermisoUsuarios(InfoNuevaPermisos.data);
         resetPermisosForm();
@@ -214,7 +214,6 @@ const CompShowUsuarios = () => {
                     permisousuario => permisousuario.permiso_id);
 
             setNuevosPermisos(ListaPermisosPerUsuario);
-
             setPermisosPorUsuario(ListaPermisosPerUsuario);
             setValidPermisosCheckbox(ListaPermisosPerUsuario.length > 0);
             setIdUsuarioMod(usuario_id);
@@ -272,6 +271,100 @@ const CompShowUsuarios = () => {
         setselectAllPermisos(false);
     };
 
+    // ***************** Agregar Cajas de Usuario *******************
+
+    //Procedimiento para mostrar todas los registros de la tabla PermisosUsuarios
+    const [cajausuarios, setCajaUsuarios] = useState([])
+    useEffect(() => {
+        getCajaUsuarios()
+    }, [])
+
+    const getCajaUsuarios = async () => {
+        const res = await axios.get(URIcajausuarios)
+        setCajaUsuarios(res.data)
+    }
+    //Procedimiento para crear/modificar las cajas por usuario
+    const modifyCajaUsuario = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
+        e.preventDefault();
+        const InfoNuevasCajas = await axios.put(`${URIcajausuarios}${idUsuarioModCajas}`, {
+            cajaMod: nuevasCajas, usuarios_id: idUsuarioMod,
+            update_by: usuarioModify, update_at: fechaActualModify
+        });
+        setCajaUsuarios(InfoNuevasCajas.data);
+        resetCajasForm();
+    }
+    //Obtiene las permisos que tiene el usuario
+    const [cajasPorUsuario, setCajasPorUsuario] = useState([]);
+    const [nuevasCajas, setNuevasCajas] = useState([]);
+    const [idUsuarioModCajas, setIdUsuarioModCajas] = useState();
+
+    const getCajasPorUsuario = (usuario_id) => {
+        try {
+            let ListaCajasPerUsuario = cajausuarios.filter(
+                cajausuario => cajausuario.usuario_id === usuario_id).map(
+                    cajausuario => cajausuario.caja_id);
+            console.log(cajausuarios)
+            console.log(ListaCajasPerUsuario)
+            setNuevasCajas(ListaCajasPerUsuario);
+            setCajasPorUsuario(ListaCajasPerUsuario);
+            setValidCajasCheckbox(ListaCajasPerUsuario.length > 0);
+            setIdUsuarioModCajas(usuario_id);
+        } catch (error) {
+            console.error('Error al obtener datos del Usuario:', error);
+        }
+    };
+
+    //Permite detectar si el checkbox está marcado o no
+    const [isValidCajasCheckbox, setValidCajasCheckbox] = useState(false);
+    const [selectAllCajas, setselectAllCajas] = useState(false);
+
+    const handleValueChangeCajas = (value) => {
+        setNuevasCajas(value);
+        setValidCajasCheckbox(value.length > 0);
+    };
+
+    const handleSelectAllChangeCajas = () => {
+        const allCajasIds = cajas.map((caja) => caja.id);
+        if (selectAllCajas) {
+            setNuevasCajas([]);
+            setValidCajasCheckbox(false);
+        } else {
+            setNuevasCajas(allCajasIds);
+            setValidCajasCheckbox(true);
+        }
+        setselectAllCajas(!selectAllCajas);
+    };
+
+    // Validar que los nuevos permisos sean diferentes que los viejos permisos
+
+    const comparaListasCajas = (a, b) => {
+        if (a.length !== b.length) return false;
+        const sortedA = [...a].sort();
+        const sortedB = [...b].sort();
+        for (let i = 0; i < sortedA.length; i++) {
+            if (sortedA[i] !== sortedB[i]) return false;
+        }
+        return true;
+    };
+
+    const validateNewCajas = (cajasPorUsuario, nuevasCajas) => {
+        return !comparaListasCajas(cajasPorUsuario, nuevasCajas);
+    };
+
+    const isValidNewCajas = () => {
+        return validateNewCajas(cajasPorUsuario, nuevasCajas);
+    };
+
+    const isValidCajasForm = isValidNewCajas() === true && isValidCajasCheckbox === true;
+
+    const resetCajasForm = () => {
+        setCajasPorUsuario([]);
+        setNuevasCajas([]);
+        setselectAllCajas(false);
+    };
+
     // ************** Modal editar información del Usuario *********************
 
     //Procedimiento para modificar los datos personales del usuario
@@ -300,13 +393,16 @@ const CompShowUsuarios = () => {
     }
 
     const modifydatospers = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         const InfoNuevosDatos = await axios.put(`${URIdatospers}${idUsuarioModDatos}`, {
             id: idUsuarioModDatos,
             nombres: nombre_personalnuevo,
             primer_apellido: primer_apellidonuevo,
             segundo_apellido: segundo_apellidonuevo,
-            telefono: telefononuevo
+            telefono: telefononuevo,
+            update_by: usuarioModify, update_at: fechaActualModify
         });
         getDatospers(InfoNuevosDatos.data);
         getUsuarios();
@@ -376,7 +472,6 @@ const CompShowUsuarios = () => {
                             <th scope="col">ID</th>
                             <th scope="col">Usuario</th>
                             <th scope="col">Contraseña</th>
-                            <th scope="col">Área</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -388,7 +483,6 @@ const CompShowUsuarios = () => {
                                     <th scope="row">{usuario.id}</th>
                                     <td>{usuario.nombre_usuario}</td>
                                     <td>{usuario.contraseña}</td>
-                                    <td>{usuario.nombre_area}</td>
                                     <td >
                                         <Popconfirm title='Borrar Usuario'
                                             description="¿Estás seguro de eliminar este usuario? Afectará al sistema"
@@ -410,6 +504,7 @@ const CompShowUsuarios = () => {
                                                 border: 0, margin: "3px 5px 3px 5px"
                                             }}
                                             onClick={() => {
+                                                getPermisos();
                                                 getPermisosPorUsuario(usuario.id);
                                             }}>
                                             Permisos
@@ -429,6 +524,21 @@ const CompShowUsuarios = () => {
                                             }}>
                                             Datos Personales
                                         </button>
+                                        <button
+                                            className="btn btn-info"
+                                            data-bs-toggle="modal" data-bs-target="#modal-cajas-users"
+                                            style={{
+                                                color: "white", backgroundColor: "#FA770F",
+                                                border: 0, margin: "3px 5px 3px 5px"
+                                            }}
+                                            onClick={() => {
+                                                resetCajasForm();
+                                                getCajas();
+                                                getCajaUsuarios();
+                                                getCajasPorUsuario(usuario.id);
+                                            }}>
+                                            Cajas
+                                        </button>
                                     </td>
                                 </tr>
                             ))
@@ -439,7 +549,7 @@ const CompShowUsuarios = () => {
                 </table>
             </div>
 
-            {/* Botón de Agregar Área */}
+            {/* Botón de Agregar Usuario */}
             <div className="d-flex justify-content-center">
                 <button
                     className="btn btn-primary"
@@ -450,6 +560,7 @@ const CompShowUsuarios = () => {
                     }}
                     onClick={() => {
                         resetCreateForm();
+                        getAreas();
                     }}
                 >
                     Agregar Usuario
@@ -531,30 +642,6 @@ const CompShowUsuarios = () => {
                                     type={isVisibleTwo ? "text" : "password"}
                                     className="max-w-xs"
                                 />
-                                {/* Selección del área */}
-                                <div style={{ marginTop: 15 }}>
-                                    <Autocomplete disableDefaultStopPropagation
-                                        label="Busca un Área"
-                                        variant="bordered"
-                                        defaultItems={areas}
-                                        className="max-w-xs"
-                                        allowsCustomValue={true}
-                                        onSelectionChange={handleSelectionChange}
-                                        onInputChange={onInputChange}
-                                        errorMessage={isValidArea ? "" : "Debes seleccionar un área"}
-                                        isInvalid={isValidArea}
-                                        color={isValidArea ? "success" : "danger"}
-                                        inputValue={inputArea}
-                                    >
-                                        {areas.map((area) => (
-                                            <AutocompleteItem key={area.id} value={area.id}>
-                                                {area.nombre_area}
-                                            </AutocompleteItem>
-                                        ))}
-                                    </Autocomplete>
-                                    <p className="mt-1 text-small text-default-500">Área seleccionada: {fk_Idarea}</p>
-                                    <p className="text-small text-default-500">Área escrita en input: {inputArea}</p>
-                                </div>
 
                                 <div className="modal-header" style={{ marginBottom: 10 }}>
                                     {/* Título 2 del Modal*/}
@@ -689,7 +776,6 @@ const CompShowUsuarios = () => {
                                                 {permiso.nombre}</Checkbox>
                                         ))}
                                     </CheckboxGroup>
-                                    <p className="text-default-500 text-small">Permisos Seleccionados: {nuevosPermisos.join(", ")}</p>
                                 </div>
 
                                 {/* Botón Guardar  */}
@@ -722,6 +808,79 @@ const CompShowUsuarios = () => {
                     </div>
                 </div>
             </div>
+
+            {/* ------- Modal de Cajas por Usuario -------*/}
+            <div className="modal fade" id="modal-cajas-users" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            {/* Título del Modal */}
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Cajas de Usuario</h1>
+                            {/* Botón X de cerrar */}
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                onClick={() => { resetCajasForm() }}
+                            ></button>
+                        </div>
+                        {/* Formulario para agregar las Cajas */}
+                        <div className="modal-body">
+                            <form onSubmit={modifyCajaUsuario}>
+                                <div>
+                                    <h1 className="modal-title fs-5" id="staticBackdropLabel"
+                                        style={{ marginBottom: 10 }}>Selecciona las cajas del usuario</h1>
+                                    {/* Creación del checkbox de NextUI */}
+                                    <Checkbox value={selectAllCajas}
+                                        onValueChange={handleSelectAllChangeCajas}
+                                        isSelected={selectAllCajas}>
+                                        Selecciona todas las Cajas
+                                    </Checkbox>
+                                    <CheckboxGroup
+                                        isRequired
+                                        description="Es obligatorio seleccionar una caja"
+                                        isInvalid={!isValidCajasCheckbox}
+                                        orientation="horizontal"
+                                        label="Marca las cajas que le correspondan"
+                                        value={nuevasCajas}
+                                        onValueChange={handleValueChangeCajas}
+                                    >
+                                        {cajas.map((caja) => (
+                                            <Checkbox key={caja.id} value={caja.id}>
+                                                {caja.nombre_caja}</Checkbox>
+                                        ))}
+                                    </CheckboxGroup>
+                                </div>
+
+                                {/* Botón Guardar  */}
+                                <div className="d-flex justify-content-center">
+                                    {isValidCajasForm ? (
+                                        // Si isValidForm es true, el botón se muestra
+                                        <Button variant="faded" className="bg-orange text-white"
+                                            type="submit" data-bs-dismiss="modal" >
+                                            Guardar
+                                        </Button>
+                                    ) : (
+                                        // Si isValidForm es false, no se muestra el botón
+                                        <>
+                                            <Button isDisabled variant="faded" className="bg-orange text-white"
+                                                type="submit" data-bs-dismiss="modal" >
+                                                Guardar
+                                            </Button>
+                                        </>
+
+                                    )}
+                                </div>
+                            </form>
+
+                        </div>
+                        <div className="modal-footer">
+                            {/* Modal de Cerrar */}
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
+                                onClick={() => { resetCajasForm() }}>Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
 
             {/* ------- Modal de Datos Personales Usuario -------*/}
             <div className="modal fade" id="modal-datos-users" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

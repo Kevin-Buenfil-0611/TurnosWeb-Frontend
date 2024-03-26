@@ -69,16 +69,16 @@ const HomePage = () => {
             <div>
                 <TextoTitulo tamaño={"h1"} texto="Selecciona el Área al que quieres entrar" color="black"></TextoTitulo>
             </div>
-            <div>
+            <div className="d-flex justify-content-center" style={{ marginTop: 20 }}>
                 {listaPermisos.includes("Caja") ? (
                     // Si es true, el botón se muestra
-                    <Button variant="faded" className="bg-ff9821 text-black"
+                    <Button variant="faded" className="bg-orange text-white"
                         onClick={goCaja}>
                         Caja
                     </Button>
                 ) : (
                     // Si es false, no se muestra el botón
-                    <Button isDisabled variant="faded" className="bg-ff9821 text-black"
+                    <Button isDisabled variant="faded" className="bg-orange text-white"
                         onClick={goCaja}>
                         Caja
                     </Button>
@@ -86,13 +86,13 @@ const HomePage = () => {
 
                 {listaPermisos.includes("Administrador") ? (
                     // Si es true, el botón se muestra
-                    <Button variant="faded" className="bg-ff9821 text-black"
+                    <Button variant="faded" className="bg-orange text-white"
                         onClick={goCrud}>
                         Administración
                     </Button>
                 ) : (
                     // Si es false, no se muestra el botón
-                    <Button isDisabled variant="faded" className="bg-ff9821 text-black"
+                    <Button isDisabled variant="faded" className="bg-orange text-white"
                         onClick={goCrud}>
                         Administración
                     </Button>
@@ -100,13 +100,13 @@ const HomePage = () => {
 
                 {listaPermisos.includes("Mostrador") ? (
                     // Si es true, el botón se muestra
-                    <Button variant="faded" className="bg-ff9821 text-black"
+                    <Button variant="faded" className="bg-orange text-white"
                         onClick={goMostrador}>
                         Mostrador
                     </Button>
                 ) : (
                     // Si es false, no se muestra el botón
-                    <Button isDisabled variant="faded" className="bg-ff9821 text-black"
+                    <Button isDisabled variant="faded" className="bg-orange text-white"
                         onClick={goMostrador}>
                         Mostrador
                     </Button>

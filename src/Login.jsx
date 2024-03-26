@@ -49,20 +49,24 @@ const Login = () => {
         e.preventDefault();
         try {
             //Validar el login y redirigir a la página
-            const autentificacion = await axios.post(URI, { usuario: usuario, contraseña: contraseña });
+            const autentificacion = await axios.post(URI, {
+                usuario: usuario.trim(),
+                contraseña: contraseña.trim()
+            });
 
             if (autentificacion.data.autorizado) {
                 //Guardar en local storage y eliminar los set de arriba, guardar directo en el ls
-                //Pasarle los datos al ls direcctos de autentificacion.data
+                //Pasarle los datos directos de autentificacion.data
                 localStorage.setItem("autorizado", autentificacion.data.autorizado);
                 localStorage.setItem("listaPermisos", autentificacion.data.permisos);
                 localStorage.setItem("usuario", autentificacion.data.usuario);
+                localStorage.setItem("usuario_id", autentificacion.data.usuario_id);
+                localStorage.setItem("caja_id", autentificacion.data.caja_id);
 
                 const autorizado = localStorage.getItem("autorizado");
                 const permisosStorage = localStorage.getItem("listaPermisos");
 
                 let listaPermisos = permisosStorage.split(',');
-
                 setAuth({ usuario, autorizado, listaPermisos });
                 navigate(from, { replace: true });
             } else {
@@ -82,7 +86,6 @@ const Login = () => {
             }
             errRef.current.focus();
         }
-
     }
     return (
         <>

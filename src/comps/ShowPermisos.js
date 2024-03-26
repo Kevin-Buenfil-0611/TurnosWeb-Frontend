@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import TextoTitulo from "../textoTitulos";
+import moment from "moment";
+import TextoTitulo from "./textoTitulos";
 import { Input, Button } from "@nextui-org/react";
 import { Popconfirm } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -35,10 +36,12 @@ const CompShowPermisos = () => {
     const [descripcionPermiso, setDescripcionPermiso] = useState('');
     const estatus = '1';
     const store = async (e) => {
+        const usuarioCreate = localStorage.getItem("usuario");
+        const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         await axios.post(URI, {
-            nombre: nombre_permiso, descripcion: descripcionPermiso,
-            estatus: estatus
+            nombre: nombre_permiso, descripcion: descripcionPermiso, estatus: estatus,
+            create_by: usuarioCreate, create_at: fechaActualCreate
         });
         getPermisos();
     }
@@ -79,10 +82,12 @@ const CompShowPermisos = () => {
     }
     //Modificar el nombre del permiso
     const modify = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         await axios.put(`${URI}${PermisoModId}`, {
-            nombre: nombrePermisoMod,
-            descripcion: descripcionPermisoMod
+            nombre: nombrePermisoMod, descripcion: descripcionPermisoMod,
+            update_by: usuarioModify, update_at: fechaActualModify
         });
         getPermisos();
     }

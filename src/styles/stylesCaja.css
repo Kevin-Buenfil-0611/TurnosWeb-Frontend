@@ -17,6 +17,17 @@
     flex-direction: column;
 }
 
+.sinTurnoContainer {
+    background-color: #FC8B0D;
+    border-radius: 2rem;
+    border: solid 0.2em;
+    border-color: orangered;
+    box-shadow: 5px 5px 5px 5px lightgray;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
 
 .centrarCaja {
     flex-grow: 1;

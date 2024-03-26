@@ -1,7 +1,8 @@
 import axios from "axios";
 import React from "react";
+import moment from "moment";
 import { useState, useEffect } from "react";
-import TextoTitulo from "../textoTitulos";
+import TextoTitulo from "./textoTitulos";
 import { CheckboxGroup, Checkbox, Button, Input } from "@nextui-org/react";
 import { Popconfirm } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -70,11 +71,12 @@ const CompShowCajas = () => {
     const estatus = '1';
     const store =
         async (e) => {
+            const usuarioCreate = localStorage.getItem("usuario");
+            const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
             e.preventDefault();
             await axios.post(URI, {
-                nombre_Caja: nombre_Caja,
-                estatus: estatus,
-                areasID: areasSelected
+                nombre_Caja: nombre_Caja, estatus: estatus, areasID: areasSelected,
+                create_by: usuarioCreate, create_at: fechaActualCreate
             });
             getAreaCajas()
         }
@@ -101,11 +103,12 @@ const CompShowCajas = () => {
 
     //Procedimiento para modificar un Caja
     const modify = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         const InfoNuevasAreasCaja = await axios.put(`${URIareacaja}${idAreaCajaMod}/${idCajaMod}`, {
-            nombre_caja: modNombre_Caja,
-            areasMod: areasMod,
-            caja_id: idCajaMod
+            nombre_caja: modNombre_Caja, areasMod: areasMod, caja_id: idCajaMod,
+            update_by: usuarioModify, update_at: fechaActualModify
         });
         setAreaCajas(InfoNuevasAreasCaja.data);
         resetFormMod();
@@ -197,8 +200,6 @@ const CompShowCajas = () => {
         setSelectAllMod(false);
     };
 
-
-
     return (
         <>
             <div>
@@ -244,6 +245,7 @@ const CompShowCajas = () => {
                                                     border: 0, margin: "3px 5px 3px 5px"
                                                 }}
                                                 onClick={() => {
+                                                    getAreas();
                                                     getAreasPorCaja(areacaja.caja_id,
                                                         areacaja.nombre_caja, areacaja.id)
                                                 }}>
@@ -270,7 +272,7 @@ const CompShowCajas = () => {
                         marginTop: 10, marginBottom: 10,
                         backgroundColor: "#FA770F", border: 0
                     }}
-                    onClick={() => resetFormCreate()}>
+                    onClick={() => { resetFormCreate(); getAreas() }}>
                     Agregar Caja
                 </button>
             </div>

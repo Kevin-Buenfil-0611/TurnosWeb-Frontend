@@ -1,0 +1,11 @@
+.ant-upload-list-item-container.ant-upload-list-item-error {
+    /* Estilos para el contenedor cuando hay un error */
+    background-color: #ffcccc;
+    /* Cambia el color de fondo a rojo claro */
+}
+
+.ant-upload-list-item-error .ant-upload-list-item-name {
+    /* Estilos para el nombre del archivo cuando hay un error */
+    color: red;
+    /* Cambia el color del texto a rojo */
+}

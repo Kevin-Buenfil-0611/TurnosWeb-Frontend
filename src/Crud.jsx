@@ -1,10 +1,10 @@
 import Encabezado from "./comps/encabezado";
-import CompShowAreas from "./comps/areaComps/ShowArea";
-import CompShowUsuarios from './comps/usuarioComps/ShowUsuarios';
-import CompShowCajas from './comps/cajaComps/ShowCaja';
-import CompShowPermisos from "./comps/permisosComps/ShowPermisos";
+import CompShowAreas from "./comps/ShowArea";
+import CompShowUsuarios from './comps/ShowUsuarios';
+import CompShowCajas from './comps/ShowCaja';
+import CompShowPermisos from "./comps/ShowPermisos";
+import CompShowVideos from "./comps/ShowVideos";
 import "./styles/stylesCrud.css"
-
 
 const Crud = () => {
 
@@ -41,6 +41,12 @@ const Crud = () => {
                         style={{ margin: "3px 5px 3px 5px" }}
                     >Permisos</button>
                 </li>
+                <li className="nav-item pill-5" role="presentation">
+                    <button className="nav-link" id="pills-permisos-tab" data-bs-toggle="pill" data-bs-target="#pills-videos"
+                        type="button" role="tab" aria-controls="pills-permisos" aria-selected="false"
+                        style={{ margin: "3px 5px 3px 5px" }}
+                    >Videos</button>
+                </li>
 
             </ul>
 
@@ -64,6 +70,11 @@ const Crud = () => {
                 <div className="tab-pane fade" id="pills-permisos" role="tabpanel"
                     aria-labelledby="pills-permisos-tab" tabIndex="0">
                     <CompShowPermisos></CompShowPermisos>
+                </div>
+                {/* Pestaña tabla Permisos */}
+                <div className="tab-pane fade" id="pills-videos" role="tabpanel"
+                    aria-labelledby="pills-permisos-tab" tabIndex="0">
+                    <CompShowVideos></CompShowVideos>
                 </div>
             </div>
         </>

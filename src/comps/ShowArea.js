@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import TextoTitulo from "../textoTitulos";
+import moment from "moment";
+import TextoTitulo from "./textoTitulos";
 import { Input, Button } from "@nextui-org/react";
 import { Popconfirm } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -33,9 +34,15 @@ const CompShowAreas = () => {
     //Procedimiento para crear un Área
     const [nombre_area, setNombre_area] = useState('');
     const estatus = '1';
+
     const store = async (e) => {
+        const usuarioCreate = localStorage.getItem("usuario");
+        const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
-        await axios.post(URI, { nombre_area: nombre_area, estatus: estatus });
+        await axios.post(URI, {
+            nombre_area: nombre_area, estatus: estatus,
+            create_by: usuarioCreate, create_at: fechaActualCreate
+        });
         getAreas();
     }
 
@@ -63,14 +70,19 @@ const CompShowAreas = () => {
     }
     //Modificar el nombre del área
     const modify = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
-        await axios.put(`${URI}${areaModId}`, { id: areaModId, nombre_area: nombreAreaMod });
+        await axios.put(`${URI}${areaModId}`, {
+            id: areaModId, nombre_area: nombreAreaMod,
+            update_by: usuarioModify, update_at: fechaActualModify
+        });
         getAreas();
     }
 
     //Validar datos del input
     const validateAreaMod = (nombreAreaMod, areaVieja) => nombreAreaMod.trim() !== '' &&
-        nombreAreaMod !== areaVieja;
+        nombreAreaMod.trim() !== areaVieja;
 
     const isValidAreaMod = React.useMemo(() => {
         return validateAreaMod(nombreAreaMod, areaVieja);
