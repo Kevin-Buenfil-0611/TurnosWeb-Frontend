@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import moment from "moment";
 import TextoTitulo from "./textoTitulos";
 import { Input, Button } from "@nextui-org/react";
 import { Popconfirm } from "antd";
@@ -23,25 +22,25 @@ const CompShowAreas = () => {
         setAreas(res.data)
     }
 
-    //Procedimiento para eliminar un Área
+    //*************** Eliminar un Área ************************
     const deleteArea = async (id) => {
+        const usuarioCreate = localStorage.getItem("usuario");
         await axios.put(`${URI}${id}`, {
-            estatus: false
+            estatus: false,
+            update_by: usuarioCreate
         })
         getAreas();
     }
 
-    //Procedimiento para crear un Área
+    // *********************** Crear un Área ***********************
     const [nombre_area, setNombre_area] = useState('');
-    const estatus = '1';
 
     const store = async (e) => {
         const usuarioCreate = localStorage.getItem("usuario");
-        const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         await axios.post(URI, {
-            nombre_area: nombre_area, estatus: estatus,
-            create_by: usuarioCreate, create_at: fechaActualCreate
+            nombre_area: nombre_area, estatus: true,
+            create_by: usuarioCreate
         });
         getAreas();
     }
@@ -58,7 +57,19 @@ const CompShowAreas = () => {
         setNombre_area('');
     };
 
-    // ------ Modal Editar Área  -------
+
+    //****************** Modificar el nombre del Área ************************
+    const modify = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        e.preventDefault();
+        await axios.put(`${URI}updateNombre`, {
+            id: areaModId, nombre_area: nombreAreaMod,
+            update_by: usuarioModify
+        });
+        getAreas();
+    }
+
+    // ************************ Modal Editar Área  *******************
     const [nombreAreaMod, setNombreAreaMod] = useState('');
     const [areaModId, setAreaModId] = useState('');
     const [areaVieja, setAreaVieja] = useState('');
@@ -68,18 +79,6 @@ const CompShowAreas = () => {
         setAreaVieja(nombre_area)
         setAreaModId(id)
     }
-    //Modificar el nombre del área
-    const modify = async (e) => {
-        const usuarioModify = localStorage.getItem("usuario");
-        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
-        e.preventDefault();
-        await axios.put(`${URI}${areaModId}`, {
-            id: areaModId, nombre_area: nombreAreaMod,
-            update_by: usuarioModify, update_at: fechaActualModify
-        });
-        getAreas();
-    }
-
     //Validar datos del input
     const validateAreaMod = (nombreAreaMod, areaVieja) => nombreAreaMod.trim() !== '' &&
         nombreAreaMod.trim() !== areaVieja;

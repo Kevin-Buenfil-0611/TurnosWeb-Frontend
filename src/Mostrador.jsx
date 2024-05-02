@@ -3,14 +3,19 @@ import './styles/stylesPubGnral.css';
 import Encabezado from "./comps/encabezado";
 import TextoTitulo from "./comps/textoTitulos";
 import axios from "axios";
-import moment from "moment";
 import { Popconfirm } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@nextui-org/react";
 
 const URI = 'http://localhost:8000/areas/'
 const URITurnos = 'http://localhost:8000/turnos/'
 const Mostrador = () => {
+
+    //Variables para navegar
+    const navigate = useNavigate();
+    const goBack = () => navigate('/Home');
 
     //Procedimiento para mostrar todas las Áreas
     const [areas, setAreas] = useState([])
@@ -23,10 +28,9 @@ const Mostrador = () => {
     }
     const createTurno = async (area_id) => {
         const usuarioCreate = localStorage.getItem("usuario");
-        const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
         const estatus = "Pendiente"
         await axios.post(URITurnos, {
-            create_by: usuarioCreate, create_at: fechaActualCreate,
+            create_by: usuarioCreate,
             estatus: estatus, fk_idarea: area_id
         });
     }
@@ -56,10 +60,17 @@ const Mostrador = () => {
         <>
             {/* Contenedor del encabezado */}
             <Encabezado nombreIcon="bi bi-calendar-check-fill" textoTitulo="Lista de Areas"></Encabezado>
+            <div className="d-flex justify-content-start align-items-center"
+                style={{ margin: "1vh" }}>
+                <Button variant="faded" className="bg-orange text-white"
+                    onClick={goBack}>
+                    Home
+                </Button>
+            </div>
             {/* Contenedor donde muestra las áreas */}
             <div className="centrar">
                 <div class="areasContainer">
-                    <div class="form-group" style={{ marginBottom: 10, marginTop: 10 }}>
+                    <div class="form-group" style={{ marginBottom: 10, marginTop: 5 }}>
                         <TextoTitulo tamaño={"h2"} texto="Seleccione el Área Deseada" color="white"></TextoTitulo>
                         <div>
                             <Grid></Grid>

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
 import axios from "axios";
+import CryptoJS from "crypto-js";
 import './styles/stylesLogin.css';
 import Encabezado from "./comps/encabezado";
 import TextoTitulo from "./comps/textoTitulos";
@@ -22,10 +23,8 @@ const Login = () => {
     const userRef = useRef();
     const errRef = useRef();
 
-
     //Input Usuario
     const [usuario, setUsuario] = useState('');
-
     const validateUsuario = (usuario) => usuario.trim() !== '';
 
     const isValidUsuario = React.useMemo(() => {
@@ -43,25 +42,24 @@ const Login = () => {
     }, [contraseña]);
 
     //Validar si el inicio de sesión es correcto
-
-
     const find = async (e) => {
+        localStorage.clear();
         e.preventDefault();
         try {
+            const contraSHA256 = CryptoJS.SHA256(contraseña.trim()).toString(CryptoJS.enc.Hex)
             //Validar el login y redirigir a la página
             const autentificacion = await axios.post(URI, {
                 usuario: usuario.trim(),
-                contraseña: contraseña.trim()
+                contraseña: contraSHA256
             });
 
             if (autentificacion.data.autorizado) {
-                //Guardar en local storage y eliminar los set de arriba, guardar directo en el ls
-                //Pasarle los datos directos de autentificacion.data
+                //Guardar en local storage 
+
                 localStorage.setItem("autorizado", autentificacion.data.autorizado);
                 localStorage.setItem("listaPermisos", autentificacion.data.permisos);
                 localStorage.setItem("usuario", autentificacion.data.usuario);
                 localStorage.setItem("usuario_id", autentificacion.data.usuario_id);
-                localStorage.setItem("caja_id", autentificacion.data.caja_id);
 
                 const autorizado = localStorage.getItem("autorizado");
                 const permisosStorage = localStorage.getItem("listaPermisos");
@@ -70,9 +68,8 @@ const Login = () => {
                 setAuth({ usuario, autorizado, listaPermisos });
                 navigate(from, { replace: true });
             } else {
-                setErrMsg('Credenciales incorrectas');
+                setErrMsg(autentificacion.data.message);
             }
-
         } catch (err) {
             //Mensajes de error
             if (!err?.response) {
@@ -95,9 +92,10 @@ const Login = () => {
             <div className="centrarLogin">
                 <div class="form-group" className="loginPrincipal">
                     <div style={{ marginTop: 10 }}></div>
-                    <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+                    <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"}
+                        style={{ color: "white", textAlign: "center", fontWeight: "bold" }}
+                        aria-live="assertive">{errMsg}</p>
                     <TextoTitulo tamaño={"h1"} texto="Bienvenido" color="#FDFEFE"></TextoTitulo>
-
                     <TextoTitulo tamaño={"h3"} texto="Ingrese sus datos" color="#FDFEFE"></TextoTitulo>
                     {/* Contenedor de la parte de usuario, contraseña y botón */}
                     {/* Usuario */}

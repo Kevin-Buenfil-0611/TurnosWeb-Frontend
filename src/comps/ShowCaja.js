@@ -1,6 +1,5 @@
 import axios from "axios";
 import React from "react";
-import moment from "moment";
 import { useState, useEffect } from "react";
 import TextoTitulo from "./textoTitulos";
 import { CheckboxGroup, Checkbox, Button, Input } from "@nextui-org/react";
@@ -13,6 +12,39 @@ const URIareas = 'http://localhost:8000/areas/';
 const URIareacaja = 'http://localhost:8000/areacaja/';
 
 const CompShowCajas = () => {
+
+    //Procedimiento para mostrar todas las areasCajas
+    const [areacajas, setAreaCajas] = useState([])
+    useEffect(() => {
+        getAreaCajas()
+    }, [])
+
+    const getAreaCajas = async () => {
+        const res = await axios.get(URIareacaja)
+        setAreaCajas(res.data)
+    }
+
+    //Procedimiento para mostrar todas las areasCajas
+    const [cajas, setCajas] = useState([])
+    useEffect(() => {
+        getCajas()
+    }, [])
+
+    const getCajas = async () => {
+        const res = await axios.get(URI)
+        setCajas(res.data)
+    }
+
+    //Procedimiento para mostrar todas las Áreas
+    const [areas, setAreas] = useState([])
+    useEffect(() => {
+        getAreas()
+    }, [])
+
+    const getAreas = async () => {
+        const res = await axios.get(URIareas)
+        setAreas(res.data)
+    }
 
     // ***** Métodos para el modal Crear ******
 
@@ -48,49 +80,28 @@ const CompShowCajas = () => {
     //Validar si se muestra o no el botón de guardar
     const isValidCajaForm = isValidCheckbox && isValidCaja;
 
-    //Procedimiento para mostrar todas las areasCajas
-    const [areacajas, setAreaCajas] = useState([])
-    useEffect(() => {
-        getAreaCajas()
-    }, [])
 
-    const getAreaCajas = async () => {
-        const res = await axios.get(URIareacaja)
-        setAreaCajas(res.data)
-    }
-
-    //Procedimiento para eliminar un registro AreaCaja
-    const deleteAreaCaja = async (id) => {
-        await axios.put(`${URIareacaja}${id}`, {
-            estatus: false
+    // ********* Eliminar Caja **************
+    const deleteCaja = async (id) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        await axios.put(`${URI}${id}`, {
+            estatus: false, update_by: usuarioModify,
         })
-        getAreaCajas()
+        getCajas()
     }
 
-    //Procedimiento para crear un Caja
-    const estatus = '1';
+    //********* Crear una Caja ***************
     const store =
         async (e) => {
             const usuarioCreate = localStorage.getItem("usuario");
-            const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
             e.preventDefault();
             await axios.post(URI, {
-                nombre_Caja: nombre_Caja, estatus: estatus, areasID: areasSelected,
-                create_by: usuarioCreate, create_at: fechaActualCreate
+                nombre_Caja: nombre_Caja, estatus: true, areasID: areasSelected,
+                create_by: usuarioCreate
             });
-            getAreaCajas()
+            getCajas()
         }
 
-    //Procedimiento para mostrar todas las Áreas
-    const [areas, setAreas] = useState([])
-    useEffect(() => {
-        getAreas()
-    }, [])
-
-    const getAreas = async () => {
-        const res = await axios.get(URIareas)
-        setAreas(res.data)
-    }
     //Resetea el modal de Create Caja
     const resetFormCreate = () => {
         setNombre_Caja('');
@@ -99,42 +110,71 @@ const CompShowCajas = () => {
         setValidCheckbox(false);
     };
 
-    // *******  Métodos para el modal Editar  ************
+
+    //***************** Modificar el nombre de la caja ******************
+
+    //Procedimiento para modificar un Caja
+    const modifyNombreCaja = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        e.preventDefault();
+        await axios.put(`${URI}${cajaModId}/updateNombreCaja`, {
+            nombre_caja: nombreCajaMod,
+            update_by: usuarioModify
+        });
+        getCajas();
+    }
+
+    const [nombreCajaMod, setNombreCajaMod] = useState('');
+    const [cajaModId, setCajaModId] = useState('');
+    const [cajaVieja, setCajaVieja] = useState('');
+
+    const getNombreCajaMod = (nombre_caja, id) => {
+        setNombreCajaMod(nombre_caja)
+        setCajaVieja(nombre_caja)
+        setCajaModId(id)
+    }
+    //Validar datos del input
+    const validateCajaMod = (nombreCajaMod, cajaVieja) => nombreCajaMod.trim() !== '' &&
+        nombreCajaMod.trim() !== cajaVieja;
+
+    const isValidNombreCajaMod = React.useMemo(() => {
+        return validateCajaMod(nombreCajaMod, cajaVieja);
+    }, [nombreCajaMod, cajaVieja]);
+
+    const resetModifyNombreForm = () => {
+        setNombreCajaMod('');
+        setCajaModId('');
+    };
+
+    // **************** Modificar las áreas de la caja *********************
 
     //Procedimiento para modificar un Caja
     const modify = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
-        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
-        const InfoNuevasAreasCaja = await axios.put(`${URIareacaja}${idAreaCajaMod}/${idCajaMod}`, {
-            nombre_caja: modNombre_Caja, areasMod: areasMod, caja_id: idCajaMod,
-            update_by: usuarioModify, update_at: fechaActualModify
+        await axios.put(`${URIareacaja}Mod/${cajaId}`, {
+            nuevasAreasMod: nuevasAreasMod, caja_id: cajaId,
+            update_by: usuarioModify
         });
-        setAreaCajas(InfoNuevasAreasCaja.data);
+        getAreaCajas();
         resetFormMod();
     }
-
     //Obtiene las áreas a las que pertenece la caja
     const [isValidAreasCheckbox, setIsValidAreasCheckbox] = useState(false);
-    const [areasMod, setAreasMod] = useState([]);
-    const [viejasareasMod, setViejasAreasMod] = useState([]);
-    const [viejoNombre_Caja, setViejoNombre_Caja] = useState('');
-    const [modNombre_Caja, setModNombre_Caja] = useState('');
-    const [idCajaMod, setIdCajaMod] = useState('');
-    const [idAreaCajaMod, setIdAreaCajaMod] = useState('');
+    const [nuevasAreasMod, setNuevasAreasMod] = useState([]);
+    const [viejasAreasMod, setViejasAreasMod] = useState([]);
+    const [cajaId, setCajaId] = useState();
 
-    const getAreasPorCaja = async (caja_id, nombre_caja, id) => {
+    const getAreasPorCaja = async (caja_id) => {
         try {
             let ListaAreasPerCaja = areacajas.filter(
                 areacaja => areacaja.caja_id === caja_id).map(
                     areacaja => areacaja.area_id);
+
+            setCajaId(caja_id);
             setIsValidAreasCheckbox(ListaAreasPerCaja.length > 0)
-            setAreasMod(ListaAreasPerCaja);
+            setNuevasAreasMod(ListaAreasPerCaja);
             setViejasAreasMod(ListaAreasPerCaja);
-            setViejoNombre_Caja(nombre_caja)
-            setModNombre_Caja(nombre_caja);
-            setIdCajaMod(caja_id);
-            setIdAreaCajaMod(id);
         } catch (error) {
             console.error('Error al obtener datos de la caja:', error);
         }
@@ -143,17 +183,17 @@ const CompShowCajas = () => {
     //Permite detectar si el checkbox está marcado o no
     const [selectAllMod, setSelectAllMod] = useState(false);
     const handleModValueChange = (value) => {
-        setAreasMod(value);
+        setNuevasAreasMod(value);
         setIsValidAreasCheckbox(value.length > 0)
     };
 
     const handleModSelectAllChange = () => {
         const allAreasModIds = areas.map((area) => area.id);
         if (selectAllMod) {
-            setAreasMod([]);
+            setNuevasAreasMod([]);
             setIsValidAreasCheckbox(false);
         } else {
-            setAreasMod(allAreasModIds);
+            setNuevasAreasMod(allAreasModIds);
             setIsValidAreasCheckbox(true);
         }
         setSelectAllMod(!selectAllMod);
@@ -171,31 +211,23 @@ const CompShowCajas = () => {
         return true;
     };
 
-    const validateNewAreas = (viejasareasMod, areasMod) => {
-        return !comparaListasAreas(viejasareasMod, areasMod);
+    const validateNewAreas = (viejasAreasMod, nuevasAreasMod) => {
+        return !comparaListasAreas(viejasAreasMod, nuevasAreasMod);
     };
 
     const isValidNewAreas = () => {
-        return validateNewAreas(viejasareasMod, areasMod);
+        return validateNewAreas(viejasAreasMod, nuevasAreasMod);
     };
-    // Validar el input de las cajas
-    const validateCajaMod = (modNombre_Caja, viejoNombre_Caja) => modNombre_Caja.trim() !== '' &&
-        modNombre_Caja !== viejoNombre_Caja;
 
-    const isValidCajaMod = React.useMemo(() => {
-        return validateCajaMod(modNombre_Caja, viejoNombre_Caja);
-    }, [modNombre_Caja, viejoNombre_Caja]);
 
     //Muestra el botón de guardar si los dos formularios están correctos
-    const isValidCajaModForm = (isValidNewAreas() && isValidAreasCheckbox === true) || isValidCajaMod === true;
+    const isValidCajaModForm = (isValidNewAreas() && isValidAreasCheckbox === true);
 
     //Resetea el datos para el modal editar
     const resetFormMod = () => {
-        setModNombre_Caja('');
-        setViejoNombre_Caja('');
-        setAreasMod([]);
-        setIdCajaMod('');
-        setIdAreaCajaMod('');
+        setCajaId();
+        setViejasAreasMod([]);
+        setNuevasAreasMod([]);
         setSelectAll(false);
         setSelectAllMod(false);
     };
@@ -212,22 +244,20 @@ const CompShowCajas = () => {
                             <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Caja</th>
-                                <th scope="col">Área</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             {/* Ciclo para obtener la información de la DB */}
-                            {areacajas ? (
-                                areacajas.map((areacaja) => (
-                                    <tr key={areacaja.id}>
-                                        <th scope="row" key={areacaja.id}>{areacaja.id}</th>
-                                        <td key={areacaja.nombre_caja}>{areacaja.nombre_caja}</td>
-                                        <td key={areacaja.nombre_area}>{areacaja.nombre_area}</td>
+                            {cajas ? (
+                                cajas.map((caja) => (
+                                    <tr key={caja.id}>
+                                        <th scope="row" key={caja.id}>{caja.id}</th>
+                                        <td key={caja.nombre_caja}>{caja.nombre_caja}</td>
                                         <td >
                                             <Popconfirm title='Borrar Elemento de Caja'
                                                 description='¿Estás seguro de eliminar este elemento?'
-                                                onConfirm={() => deleteAreaCaja(areacaja.id)}
+                                                onConfirm={() => deleteCaja(caja.id)}
                                                 icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                                                 okButtonProps={{ style: { backgroundColor: '#FA770F', color: 'white' } }}
                                             >
@@ -239,17 +269,31 @@ const CompShowCajas = () => {
                                             </Popconfirm>
                                             <button
                                                 className="btn btn-info"
-                                                data-bs-toggle="modal" data-bs-target="#modal-edit-caja"
+                                                data-bs-toggle="modal" data-bs-target="#modal-edit-nombrecaja"
                                                 style={{
                                                     color: "white", backgroundColor: "#004DDE",
                                                     border: 0, margin: "3px 5px 3px 5px"
                                                 }}
                                                 onClick={() => {
-                                                    getAreas();
-                                                    getAreasPorCaja(areacaja.caja_id,
-                                                        areacaja.nombre_caja, areacaja.id)
+                                                    resetModifyNombreForm();
+                                                    getNombreCajaMod(caja.nombre_caja,
+                                                        caja.id)
                                                 }}>
                                                 Editar
+                                            </button>
+                                            <button
+                                                className="btn btn-info"
+                                                data-bs-toggle="modal" data-bs-target="#modal-edit-caja"
+                                                style={{
+                                                    color: "white", backgroundColor: "#00B2FF",
+                                                    border: 0, margin: "3px 5px 3px 5px"
+                                                }}
+                                                onClick={() => {
+                                                    getAreaCajas();
+                                                    getAreas();
+                                                    getAreasPorCaja(caja.id)
+                                                }}>
+                                                Áreas
                                             </button>
                                         </td>
                                     </tr>
@@ -286,7 +330,7 @@ const CompShowCajas = () => {
                             <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Crear Caja</h1>
                             {/* Botón X de cerrar */}
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                                onClick={() => getAreaCajas()}></button>
+                                onClick={() => getCajas()}></button>
                         </div>
 
                         {/* Formulario para agregar Caja */}
@@ -359,7 +403,70 @@ const CompShowCajas = () => {
                         {/* Modal de Cerrar */}
                         <div className="modal-footer">
                             <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
-                                onClick={() => getAreaCajas()}>Cerrar</button>
+                                onClick={() => getCajas()}>Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ----------- Modal de Editar Nombre de la Caja ---------- */}
+            <div className="modal fade" id="modal-edit-nombrecaja" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            {/* Título del Modal */}
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Editar Caja</h1>
+                            {/* Botón X de cerrar */}
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                onClick={() => {
+                                    getCajas()
+                                    resetFormMod()
+                                }}></button>
+                        </div>
+
+                        {/* Formulario para modificar el nombre */}
+                        <div className="modal-body" >
+                            <h1 className="modal-title fs-6" id="staticBackdropLabel"
+                                style={{ marginBottom: 10 }}>Es obligatorio modificar el campo para guardar</h1>
+                            <form onSubmit={modifyNombreCaja}>
+                                <Input
+                                    value={nombreCajaMod}
+                                    type="text"
+                                    label="Nombre de la Caja"
+                                    placeholder="Ingrese el nombre nuevo  de la Caja"
+                                    variant="bordered"
+                                    isInvalid={!isValidNombreCajaMod}
+                                    color={isValidNombreCajaMod ? "success" : "danger"}
+                                    errorMessage={!isValidNombreCajaMod && "Escribe un nombre válido"}
+                                    onChange={(e) => setNombreCajaMod(e.target.value)}
+                                    className="max-w-xs"
+                                />
+
+                                {/* Botón Guardar */}
+                                <div className="d-flex justify-content-center align-items-center">
+                                    {isValidNombreCajaMod ? (
+                                        // Si es true, el botón se muestra
+                                        <Button variant="faded" className="bg-orange text-white"
+                                            type="submit" data-bs-dismiss="modal" >
+                                            Guardar
+                                        </Button>
+                                    ) : (
+                                        // Si es false, no se muestra el botón
+                                        <Button isDisabled variant="faded" className="bg-orange text-white"
+                                            type="submit" data-bs-dismiss="modal" >
+                                            Guardar
+                                        </Button>
+                                    )}
+                                </div>
+                            </form>
+                        </div>
+                        {/* Modal de Cerrar */}
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
+                                onClick={() => {
+                                    getCajas()
+                                    resetModifyNombreForm()
+                                }}>Cerrar</button>
                         </div>
                     </div>
                 </div>
@@ -380,24 +487,11 @@ const CompShowCajas = () => {
                                 }}></button>
                         </div>
 
-                        {/* Formulario para modificar Áreas */}
+                        {/* Formulario para modificar Áreas de la caja */}
                         <div className="modal-body" >
                             <h1 className="modal-title fs-6" id="staticBackdropLabel"
                                 style={{ marginBottom: 10 }}>Es obligatorio modificar al menos un campo</h1>
                             <form onSubmit={modify}>
-                                <Input
-                                    value={modNombre_Caja}
-                                    type="text"
-                                    label="Nombre de la Caja"
-                                    placeholder="Ingrese el nombre nuevo  de la Caja"
-                                    variant="bordered"
-                                    isInvalid={!isValidCajaMod}
-                                    color={isValidCajaMod ? "success" : "danger"}
-                                    errorMessage={!isValidCajaMod && "Escribe un nombre válido"}
-                                    onChange={(e) => setModNombre_Caja(e.target.value)}
-                                    className="max-w-xs"
-                                />
-
                                 {/* Selección del área */}
                                 <div style={{ marginTop: 10 }}>
                                     <h1 className="modal-title fs-5" id="staticBackdropLabel"
@@ -414,7 +508,7 @@ const CompShowCajas = () => {
                                         isInvalid={!isValidAreasCheckbox}
                                         orientation="horizontal"
                                         label="Marca las áreas que correspondan"
-                                        value={areasMod}
+                                        value={nuevasAreasMod}
                                         onValueChange={handleModValueChange}
                                     >
                                         {areas.map((area) => (
@@ -423,7 +517,7 @@ const CompShowCajas = () => {
                                         ))}
                                     </CheckboxGroup>
                                     <p className="text-default-500 text-small">Áreas Seleccionadas: {
-                                        areas.filter(area => areasMod.includes(area.id)).map(area => area.nombre_area).join(", ")
+                                        areas.filter(area => nuevasAreasMod.includes(area.id)).map(area => area.nombre_area).join(", ")
                                     }</p>
                                 </div>
 

@@ -4,15 +4,20 @@ import LogoAyuntamiento from "./comps/LogoAyuntamiento.webp"
 import ReproductorVideo from "./comps/ReproductorVideo";
 
 const URI = 'http://localhost:8000/turnos/';
-const URITurno = 'http://localhost:8000/turnos/siguiente'
+const URITurno = 'http://localhost:8000/turnos/siguiente';
 
 
-const TurnosPage = () => {
+const ListaEspera = () => {
     //Procedimiento para mostrar todas los Turnos
     const [turnos, setTurnos] = useState([])
     useEffect(() => {
-        getTurnos()
-    }, [])
+        getTurnos();
+        const intervalo = setInterval(() => {
+            getTurnos();
+        }, 10000); // Actualiza cada 30 segundos
+        // Limpia el intervalo cuando el componente se desmonta
+        return () => clearInterval(intervalo);
+    }, []);
 
     const getTurnos = async () => {
         const res = await axios.get(URI)
@@ -21,7 +26,13 @@ const TurnosPage = () => {
     //Procedimiento para mostrar todas los Turnos
     const [turnoNuevo, setTurnoNuevo] = useState([])
     useEffect(() => {
-        getTurnoNuevo()
+        getTurnoNuevo();
+        const intervalo = setInterval(() => {
+            getTurnoNuevo();
+        }, 10000); // Actualiza cada 10 segundos
+
+        // Limpia el intervalo cuando el componente se desmonta
+        return () => clearInterval(intervalo);
     }, [])
 
     const getTurnoNuevo = async () => {
@@ -30,39 +41,39 @@ const TurnosPage = () => {
     }
     //Información del nuevo turno
     function mostrarInformacionTurno() {
-        const textoTurno = "Turno " + turnoNuevo.turno_id;
-
+        const ultimoTurno = turnoNuevo;
         const NumeroDelTurno = (
             <p style={{
                 fontWeight: 'bold',
                 textAlign: 'center',
-                fontSize: '10vh',
+                fontSize: '5.5vh',
                 color: 'white'
-            }}>{textoTurno}</p>
+            }}>Turno: {ultimoTurno.id}</p>
         );
 
         const DatosDelTurno = (
             <p style={{
                 fontWeight: 'bold',
                 textAlign: 'center',
-                fontSize: '10vh',
+                fontSize: '5.5vh',
                 color: 'white'
-            }}>{turnoNuevo.nombre_area}</p>
+            }}>Área: {ultimoTurno.nombre_area}</p>
         );
 
         const CajaDelTurno = (
             <p style={{
                 fontWeight: 'bold',
                 textAlign: 'center',
-                fontSize: '10vh',
+                fontSize: '5.5vh',
                 color: 'white'
-            }}>{turnoNuevo.nombre_area}</p>
+            }}>Caja: {ultimoTurno.nombre_caja}</p>
         );
 
         return (
             <div>
                 {NumeroDelTurno}
                 {DatosDelTurno}
+                {CajaDelTurno}
             </div>
         );
     }
@@ -80,18 +91,13 @@ const TurnosPage = () => {
                             }} />
                         </div>
                         {/* Este div contiene los textos */}
-                        <div className="col-9">
+                        <div className="col-9" >
                             <div className="d-flex justify-content-center" style={{
                                 backgroundColor: "#FC8B0D", borderRadius: "2rem",
                                 border: "solid 0.2rem", borderColor: "orangered",
-                                flexDirection: "column", margin: "0px 10px 0px 10px"
+                                flexDirection: "column", margin: "0px 10px 0px 10px",
+                                maxHeight: "50vh"
                             }}>
-                                {/* <p style={{
-                                    fontWeight: 'bold', textAlign: 'center',
-                                    fontSize: '60px', color: "white"
-                                }}>
-                                    Turno Actual
-                                </p> */}
                                 <div>{mostrarInformacionTurno()}</div>
                             </div>
                         </div>
@@ -103,12 +109,6 @@ const TurnosPage = () => {
                 </div>
 
 
-
-
-                {/* Lista de los turnos en Espera 
-            Preguntar si se crea un nuevo campo en la tabla cajas llamado Módulo
-            Ordena los turnos por fecha, preguntar si cada área debe tener su
-            número de turno interno */}
                 <div className="col-6" >
                     <table className="table table-striped table-bordered border-black align-middle">
                         <thead className="table-dark">
@@ -116,6 +116,7 @@ const TurnosPage = () => {
                             <tr>
                                 <th scope="col">Turno</th>
                                 <th scope="col">Área</th>
+                                <th scope="col">Caja</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -123,8 +124,9 @@ const TurnosPage = () => {
                             {turnos ? (
                                 turnos.map((turno) => (
                                     <tr key={turno.id}>
-                                        <th scope="row">{turno.nombre_area}</th>
-                                        <td>{turno.id}</td>
+                                        <th scope="row">{turno.id}</th>
+                                        <td>{turno.nombre_area}</td>
+                                        <td>{turno.nombre_caja}</td>
                                     </tr>
                                 ))
                             ) : (
@@ -137,4 +139,4 @@ const TurnosPage = () => {
         </ >
     )
 };
-export default TurnosPage;
+export default ListaEspera;

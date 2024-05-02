@@ -4,14 +4,28 @@ import CompShowUsuarios from './comps/ShowUsuarios';
 import CompShowCajas from './comps/ShowCaja';
 import CompShowPermisos from "./comps/ShowPermisos";
 import CompShowVideos from "./comps/ShowVideos";
-import "./styles/stylesCrud.css"
+import "./styles/stylesCrud.css";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@nextui-org/react";
 
 const Crud = () => {
+    //Variables para navegar
+    const navigate = useNavigate();
+    const goBack = () => navigate('/Home');
 
     return (
         <>
             {/* Componente del encabezado */}
             <Encabezado nombreIcon="bi bi-database-fill-gear" textoTitulo="Pantalla de Administrador"></Encabezado>
+
+            {/* Botón para regresar home */}
+            <div className="d-flex justify-content-start align-items-center"
+                style={{ margin: "1vh" }}>
+                <Button variant="faded" className="bg-orange text-white"
+                    onClick={goBack}>
+                    Home
+                </Button>
+            </div>
 
             {/* Barra de Navegación entre CRUDS */}
             <ul className="nav nav-pills mb-3" id="crud-tab" role="tablist" style={{

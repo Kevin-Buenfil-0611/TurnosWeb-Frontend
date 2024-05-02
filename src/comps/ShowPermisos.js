@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import moment from "moment";
 import TextoTitulo from "./textoTitulos";
 import { Input, Button } from "@nextui-org/react";
 import { Popconfirm } from "antd";
@@ -23,25 +22,15 @@ const CompShowPermisos = () => {
         setPermisos(res.data)
     }
 
-    //Procedimiento para eliminar un permiso
-    const deletePermiso = async (id) => {
-        await axios.put(`${URI}${id}`, {
-            estatus: false
-        })
-        getPermisos();
-    }
-
-    //Procedimiento para crear un Permiso
+    // ********************* Crear un Permiso ***********************
     const [nombre_permiso, setNombre_permiso] = useState('');
     const [descripcionPermiso, setDescripcionPermiso] = useState('');
-    const estatus = '1';
     const store = async (e) => {
         const usuarioCreate = localStorage.getItem("usuario");
-        const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         await axios.post(URI, {
-            nombre: nombre_permiso, descripcion: descripcionPermiso, estatus: estatus,
-            create_by: usuarioCreate, create_at: fechaActualCreate
+            nombre: nombre_permiso, descripcion: descripcionPermiso,
+            estatus: true, create_by: usuarioCreate
         });
         getPermisos();
     }
@@ -66,6 +55,15 @@ const CompShowPermisos = () => {
         setDescripcionPermiso('');
     };
 
+    // **************** Eliminar un permiso ******************
+    const deletePermiso = async (id) => {
+        const usuarioCreate = localStorage.getItem("usuario");
+        await axios.put(`${URI}${id}`, {
+            estatus: false, update_by: usuarioCreate
+        })
+        getPermisos();
+    }
+
     // ------ Modal Editar Permiso  -------
     const [PermisoModId, setPermisoModId] = useState('');
     const [nombrePermisoMod, setNombrePermisoMod] = useState('');
@@ -80,14 +78,13 @@ const CompShowPermisos = () => {
         setDescripcionPermisoMod(descripcion);
         setDescripcionVieja(descripcion);
     }
-    //Modificar el nombre del permiso
+    //*************** Modificar el nombre del permiso ****************
     const modify = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
-        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
-        await axios.put(`${URI}${PermisoModId}`, {
+        await axios.put(`${URI}updateNombre`, {
             nombre: nombrePermisoMod, descripcion: descripcionPermisoMod,
-            update_by: usuarioModify, update_at: fechaActualModify
+            update_by: usuarioModify, permiso_id: PermisoModId
         });
         getPermisos();
     }

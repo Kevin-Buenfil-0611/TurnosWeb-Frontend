@@ -14,9 +14,16 @@ const ReproductorVideo = () => {
             console.error('Error al obtener la lista de videos:', error);
         }
     };
+
     useEffect(() => {
         obtenerListaVideos();
-    }, []);
+        const intervalo = setInterval(() => {
+            obtenerListaVideos();
+        }, 10000); // Actualiza cada 10 segundos
+
+        // Limpia el intervalo cuando el componente se desmonta
+        return () => clearInterval(intervalo);
+    }, [])
 
     const handleVideoEnded = async () => {
         try {

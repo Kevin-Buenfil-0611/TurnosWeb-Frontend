@@ -11,15 +11,16 @@ const NoAutenticado = () => {
     return (
         <>
             {/* Contenedor del encabezado */}
-            <Encabezado nombreIcon="bi bi-calendar-check-fill" textoTitulo="Pantalla de Error"></Encabezado>
+            <Encabezado nombreIcon="bi bi-calendar-check-fill" textoTitulo="Error"></Encabezado>
 
             <div>
                 <TextoTitulo tamaño={"h1"} texto="No está autenticado" color="black"></TextoTitulo>
                 <TextoTitulo tamaño={"h3"} texto="Póngase en contacto con el administrador" color="black"></TextoTitulo>
             </div>
 
-            <div>
-                <Button onClick={goBack}>
+            <div className="d-flex justify-content-center align-items-center">
+                <Button variant="faded" className="bg-orange text-white"
+                    onClick={goBack}>
                     Regresa al inicio
                 </Button>
             </div>

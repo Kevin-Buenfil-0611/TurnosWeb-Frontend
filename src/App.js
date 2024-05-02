@@ -2,7 +2,7 @@
 import Login from './Login';
 import Caja from './Caja';
 import Mostrador from './Mostrador';
-import TurnosPage from './TurnosPage';
+import ListaEspera from './ListaEspera';
 import Crud from './Crud';
 import NoAutorizado from './NoAutorizado';
 import NoAutenticado from './NoAutenticado';
@@ -19,8 +19,8 @@ function App() {
             <Route path='/' element={<Layout />}>
                 {/* Rutas públicas */}
                 <Route path='/' element={<Login />} />
-                <Route path='ListaEspera' element={<TurnosPage />} />
-                <Route path='NoAutirizado' element={<NoAutorizado />} />
+                <Route path='ListaEspera' element={<ListaEspera />} />
+                <Route path='NoAutorizado' element={<NoAutorizado />} />
                 <Route path='NoAutenticado' element={<NoAutenticado />} />
 
                 {/* Rutas privadas */}

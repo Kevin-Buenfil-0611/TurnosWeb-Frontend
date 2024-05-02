@@ -1,11 +1,13 @@
 import axios from "axios";
 import React from "react";
+import CryptoJS from "crypto-js";
 import TextoTitulo from "./textoTitulos";
-import moment from "moment";
 import { useState, useEffect } from "react";
 import { Input, Button, CheckboxGroup, Checkbox } from "@nextui-org/react";
 import { Popconfirm } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+
+//*******Crear un botón para cambiar contraseña*******
 
 //Dirección del backend para acceder a los métodos de la base de datos
 const URI = 'http://localhost:8000/usuarios/';
@@ -13,11 +15,11 @@ const URIareas = 'http://localhost:8000/areas/';
 const URIcajas = 'http://localhost:8000/cajas/';
 const URIpermisos = 'http://localhost:8000/permisos/';
 const URIpermisosusuarios = 'http://localhost:8000/permisousuario/';
-const URIcajausuarios = 'http://localhost:8000/cajausuario/'
+const URIcajausuarios = 'http://localhost:8000/cajausuario/';
 const URIdatospers = 'http://localhost:8000/datospers/';
+const URIareausuarios = 'http://localhost:8000/areausuario/';
 
 const CompShowUsuarios = () => {
-
     //Procedimiento para mostrar todas los Usuarios
     const [usuarios, setUsuarios] = useState([])
     useEffect(() => {
@@ -75,13 +77,15 @@ const CompShowUsuarios = () => {
 
     //Procedimiento para eliminar un Usuario
     const deleteUsuario = async (id) => {
+        const usuarioDelete = localStorage.getItem("usuario");
         await axios.put(`${URI}${id}`, {
-            estatus: false
+            estatus: false, update_by: usuarioDelete
         });
         getUsuarios();
     }
 
-    // *************** Agregar Usuario ****************
+
+    // *************** Crear Usuario ****************
     //Procedimiento para crear un Usuario
     const [nombre_usuario, setNombre_usuario] = useState('');
     const [contraseña, setContraseña] = useState('');
@@ -91,17 +95,17 @@ const CompShowUsuarios = () => {
     const [segundo_apellido, setSegundoApellido] = useState('');
     const [telefono, setTelefono] = useState('');
 
-    const estatus = '1';
+
     const store = async (e) => {
         const usuarioCreate = localStorage.getItem("usuario");
-        const fechaActualCreate = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
+        //Encriptar la contraseña
+        const contraSHA256 = CryptoJS.SHA256(contraseña).toString(CryptoJS.enc.Hex)
         await axios.post(URI, {
-            nombre_usuario: nombre_usuario, contraseña: contraseña,
-            estatus: estatus, nombre_personal: nombre_personal,
+            nombre_usuario: nombre_usuario, contraseña: contraSHA256,
+            estatus: true, nombre_personal: nombre_personal,
             primer_apellido: primer_apellido, segundo_apellido: segundo_apellido,
-            telefono: telefono, create_by: usuarioCreate,
-            create_at: fechaActualCreate
+            telefono: telefono, create_by: usuarioCreate
         });
         getUsuarios();
         getDatospers();
@@ -192,11 +196,11 @@ const CompShowUsuarios = () => {
     //Procedimiento para crear/modificar los permisos por usuario
     const modify = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
-        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
+        //const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         const InfoNuevaPermisos = await axios.put(`${URIpermisosusuarios}${idUsuarioMod}`, {
             permisosMod: nuevosPermisos, usuarios_id: idUsuarioMod,
-            update_by: usuarioModify, update_at: fechaActualModify
+            update_by: usuarioModify// update_at: fechaActualModify
         });
         setPermisoUsuarios(InfoNuevaPermisos.data);
         resetPermisosForm();
@@ -227,6 +231,7 @@ const CompShowUsuarios = () => {
     const [selectAllPermisos, setselectAllPermisos] = useState(false);
 
     const handleValueChange = (value) => {
+
         setNuevosPermisos(value);
         setValidPermisosCheckbox(value.length > 0);
     };
@@ -271,6 +276,7 @@ const CompShowUsuarios = () => {
         setselectAllPermisos(false);
     };
 
+
     // ***************** Agregar Cajas de Usuario *******************
 
     //Procedimiento para mostrar todas los registros de la tabla PermisosUsuarios
@@ -286,16 +292,15 @@ const CompShowUsuarios = () => {
     //Procedimiento para crear/modificar las cajas por usuario
     const modifyCajaUsuario = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
-        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         const InfoNuevasCajas = await axios.put(`${URIcajausuarios}${idUsuarioModCajas}`, {
-            cajaMod: nuevasCajas, usuarios_id: idUsuarioMod,
-            update_by: usuarioModify, update_at: fechaActualModify
+            cajaMod: nuevasCajas, usuario_id: idUsuarioModCajas,
+            update_by: usuarioModify
         });
         setCajaUsuarios(InfoNuevasCajas.data);
         resetCajasForm();
     }
-    //Obtiene las permisos que tiene el usuario
+    //Obtiene las cajas que tiene el usuario
     const [cajasPorUsuario, setCajasPorUsuario] = useState([]);
     const [nuevasCajas, setNuevasCajas] = useState([]);
     const [idUsuarioModCajas, setIdUsuarioModCajas] = useState();
@@ -305,8 +310,6 @@ const CompShowUsuarios = () => {
             let ListaCajasPerUsuario = cajausuarios.filter(
                 cajausuario => cajausuario.usuario_id === usuario_id).map(
                     cajausuario => cajausuario.caja_id);
-            console.log(cajausuarios)
-            console.log(ListaCajasPerUsuario)
             setNuevasCajas(ListaCajasPerUsuario);
             setCajasPorUsuario(ListaCajasPerUsuario);
             setValidCajasCheckbox(ListaCajasPerUsuario.length > 0);
@@ -365,6 +368,97 @@ const CompShowUsuarios = () => {
         setselectAllCajas(false);
     };
 
+    // ***************** Agregar Areas del Usuario *******************
+
+    //Procedimiento para mostrar todas los registros de la tabla PermisosUsuarios
+    const [areausuarios, setAreaUsuarios] = useState([])
+    useEffect(() => {
+        getAreaUsuarios()
+    }, [])
+
+    const getAreaUsuarios = async () => {
+        const res = await axios.get(URIareausuarios)
+        setAreaUsuarios(res.data)
+    }
+    //Procedimiento para crear/modificar las cajas por usuario
+    const modifyAreaUsuario = async (e) => {
+        const usuarioModify = localStorage.getItem("usuario");
+        e.preventDefault();
+        const InfoNuevasAreas = await axios.put(`${URIareausuarios}${idUsuarioModAreas}`, {
+            areasMod: nuevasAreas, usuario_id: idUsuarioModAreas,
+            update_by: usuarioModify
+        });
+        setAreaUsuarios(InfoNuevasAreas.data);
+        resetAreasForm();
+    }
+    //Obtiene las cajas que tiene el usuario
+    const [areasPorUsuario, setAreasPorUsuario] = useState([]);
+    const [nuevasAreas, setNuevasAreas] = useState([]);
+    const [idUsuarioModAreas, setIdUsuarioModAreas] = useState();
+
+    const getAreasPorUsuario = (usuario_id) => {
+        try {
+            let ListaAreasPerUsuario = areausuarios.filter(
+                areausuario => areausuario.usuario_id === usuario_id).map(
+                    areausuario => areausuario.area_id);
+            setNuevasAreas(ListaAreasPerUsuario);
+            setAreasPorUsuario(ListaAreasPerUsuario);
+            setValidAreasCheckbox(ListaAreasPerUsuario.length > 0);
+            setIdUsuarioModAreas(usuario_id);
+        } catch (error) {
+            console.error('Error al obtener datos del Usuario:', error);
+        }
+    };
+
+    //Permite detectar si el checkbox está marcado o no
+    const [isValidAreasCheckbox, setValidAreasCheckbox] = useState(false);
+    const [selectAllAreas, setselectAllAreas] = useState(false);
+
+    const handleValueChangeAreas = (value) => {
+        setNuevasAreas(value);
+        setValidAreasCheckbox(value.length > 0);
+    };
+
+    const handleSelectAllChangeAreas = () => {
+        const allAreasIds = areas.map((area) => area.id);
+        if (selectAllAreas) {
+            setNuevasAreas([]);
+            setValidAreasCheckbox(false);
+        } else {
+            setNuevasAreas(allAreasIds);
+            setValidAreasCheckbox(true);
+        }
+        setselectAllAreas(!selectAllAreas);
+    };
+
+    // Validar que los nuevos permisos sean diferentes que los viejos permisos
+
+    const comparaListasAreas = (a, b) => {
+        if (a.length !== b.length) return false;
+        const sortedA = [...a].sort();
+        const sortedB = [...b].sort();
+        for (let i = 0; i < sortedA.length; i++) {
+            if (sortedA[i] !== sortedB[i]) return false;
+        }
+        return true;
+    };
+
+    const validateNewAreas = (areasPorUsuario, nuevasAreas) => {
+        return !comparaListasAreas(areasPorUsuario, nuevasAreas);
+    };
+
+    const isValidNewAreas = () => {
+        return validateNewAreas(areasPorUsuario, nuevasAreas);
+    };
+
+    const isValidAreasForm = isValidNewAreas() === true && isValidAreasCheckbox === true;
+
+    const resetAreasForm = () => {
+        setAreasPorUsuario([]);
+        setNuevasAreas([]);
+        setselectAllAreas(false);
+    };
+
     // ************** Modal editar información del Usuario *********************
 
     //Procedimiento para modificar los datos personales del usuario
@@ -394,7 +488,6 @@ const CompShowUsuarios = () => {
 
     const modifydatospers = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
-        const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         const InfoNuevosDatos = await axios.put(`${URIdatospers}${idUsuarioModDatos}`, {
             id: idUsuarioModDatos,
@@ -402,7 +495,7 @@ const CompShowUsuarios = () => {
             primer_apellido: primer_apellidonuevo,
             segundo_apellido: segundo_apellidonuevo,
             telefono: telefononuevo,
-            update_by: usuarioModify, update_at: fechaActualModify
+            update_by: usuarioModify
         });
         getDatospers(InfoNuevosDatos.data);
         getUsuarios();
@@ -471,7 +564,6 @@ const CompShowUsuarios = () => {
                         <tr>
                             <th scope="col">ID</th>
                             <th scope="col">Usuario</th>
-                            <th scope="col">Contraseña</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -482,7 +574,6 @@ const CompShowUsuarios = () => {
                                 <tr key={usuario.id}>
                                     <th scope="row">{usuario.id}</th>
                                     <td>{usuario.nombre_usuario}</td>
-                                    <td>{usuario.contraseña}</td>
                                     <td >
                                         <Popconfirm title='Borrar Usuario'
                                             description="¿Estás seguro de eliminar este usuario? Afectará al sistema"
@@ -538,6 +629,21 @@ const CompShowUsuarios = () => {
                                                 getCajasPorUsuario(usuario.id);
                                             }}>
                                             Cajas
+                                        </button>
+                                        <button
+                                            className="btn btn-info"
+                                            data-bs-toggle="modal" data-bs-target="#modal-areas-users"
+                                            style={{
+                                                color: "white", backgroundColor: "#00B2FF",
+                                                border: 0, margin: "3px 5px 3px 5px"
+                                            }}
+                                            onClick={() => {
+                                                resetAreasForm();
+                                                getAreas();
+                                                getAreaUsuarios();
+                                                getAreasPorUsuario(usuario.id);
+                                            }}>
+                                            Áreas
                                         </button>
                                     </td>
                                 </tr>
@@ -802,6 +908,7 @@ const CompShowUsuarios = () => {
                         </div>
                         <div className="modal-footer">
                             {/* Modal de Cerrar */}
+                            <p>*Se da prioridad a las Áreas de la Caja en caso de otorgar los 2 permisos de "Áreas de la Caja" y "Áreas del Usuario" </p>
                             <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
                                 onClick={() => { resetPermisosForm() }}>Cerrar</button>
                         </div>
@@ -875,6 +982,75 @@ const CompShowUsuarios = () => {
                             {/* Modal de Cerrar */}
                             <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
                                 onClick={() => { resetCajasForm() }}>Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ------- Modal de Areas por Usuario -------*/}
+            <div className="modal fade" id="modal-areas-users" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            {/* Título del Modal */}
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Áreas de Usuario</h1>
+                            {/* Botón X de cerrar */}
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                onClick={() => { resetAreasForm() }}
+                            ></button>
+                        </div>
+                        {/* Formulario para agregar las Cajas */}
+                        <div className="modal-body">
+                            <form onSubmit={modifyAreaUsuario}>
+                                <div>
+                                    <h1 className="modal-title fs-5" id="staticBackdropLabel"
+                                        style={{ marginBottom: 10 }}>Selecciona las áreas del usuario</h1>
+                                    {/* Creación del checkbox de NextUI */}
+                                    <Checkbox value={selectAllAreas}
+                                        onValueChange={handleSelectAllChangeAreas}
+                                        isSelected={selectAllAreas}>
+                                        Selecciona todas las Áreas
+                                    </Checkbox>
+                                    <CheckboxGroup
+                                        isRequired
+                                        description="Es obligatorio seleccionar una caja"
+                                        isInvalid={!isValidAreasCheckbox}
+                                        orientation="horizontal"
+                                        label="Marca las cajas que le correspondan"
+                                        value={nuevasAreas}
+                                        onValueChange={handleValueChangeAreas}
+                                    >
+                                        {areas.map((area) => (
+                                            <Checkbox key={area.id} value={area.id}>
+                                                {area.nombre_area}</Checkbox>
+                                        ))}
+                                    </CheckboxGroup>
+                                </div>
+
+                                {/* Botón Guardar  */}
+                                <div className="d-flex justify-content-center">
+                                    {isValidAreasForm ? (
+                                        // Si isValidForm es true, el botón se muestra
+                                        <Button variant="faded" className="bg-orange text-white"
+                                            type="submit" data-bs-dismiss="modal" >
+                                            Guardar
+                                        </Button>
+                                    ) : (
+                                        // Si isValidForm es false, no se muestra el botón
+                                        <>
+                                            <Button isDisabled variant="faded" className="bg-orange text-white"
+                                                type="submit" data-bs-dismiss="modal" >
+                                                Guardar
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
+                            </form>
+                        </div>
+                        <div className="modal-footer">
+                            {/* Modal de Cerrar */}
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
+                                onClick={() => { resetAreasForm() }}>Cerrar</button>
                         </div>
                     </div>
                 </div>

@@ -9,7 +9,7 @@ const RequireAuth = ({ permisosConcedidos }) => {
     return (
         auth?.listaPermisos?.find(permiso => permisosConcedidos?.includes(permiso))
             ? <Outlet />
-            : auth?.usuario ? <Navigate to='/NoAutirizado' state={{ from: location }} replace /> //si no tiene los permisos
+            : auth?.usuario ? <Navigate to='/NoAutorizado' state={{ from: location }} replace /> //si no tiene los permisos
                 : <Navigate to='/NoAutenticado' state={{ from: location }} replace /> //si no está autenticado
     )
 }

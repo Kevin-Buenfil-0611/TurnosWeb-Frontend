@@ -6,51 +6,85 @@ import Encabezado from "./comps/encabezado";
 import TextoTitulo from "./comps/textoTitulos";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Popconfirm } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
-const URI = 'http://localhost:8000/turnos/'
-//Checar la relacion de usuario con cajas para saber a ue caja va y obtener la info
-//Checarlo desde la parte de la creación del usuario y del login
-//Luego pasar la info al backend
+const URI = 'http://localhost:8000/turnos/';
+const URIarea = 'http://localhost:8000/areas/';
+const URIareaCaja = 'http://localhost:8000/areacaja/';
+const URIareaUsuario = 'http://localhost:8000/areausuario/';
 
 const Caja = () => {
-
+    //Variables para navegar
+    const navigate = useNavigate();
+    const goBack = () => navigate('/Home');
     //Acciones del Modal
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-    //Título del Área que atiende la caja
-    const AreaUsuario = localStorage.getItem("nombre_area");
-    const TextoAreaUsuario = "Area: " + AreaUsuario
-
-    //Área a la que pertenece el usuario
-    const IdAreaUsuario = localStorage.getItem("area_id");
-
-    //Usuario que atiende el turno y hora en que atiende
-    const NombreUsuario = localStorage.getItem("usuario");
+    //Información del Usuario
+    const CajaActual = localStorage.getItem("caja_id");
+    const UsuarioID = localStorage.getItem("usuario_id");
+    const permisosStorage = localStorage.getItem("listaPermisos");
+    let ListaPermisos = permisosStorage.split(',');
 
     //Procedimiento para mostrar todas los Turnos
     const [turnos, setTurnos] = useState([]);
     const [turnoActual, setTurnoActual] = useState();
     const [turnoAtendiendo, setTurnoAtendiendo] = useState();
+    const [nombreAreas, setNombreAreas] = useState();
+    //******************* Modificar para que permita leer una lista de áreas *********************
+    const getNombreAreas = async () => {
+        let ListaDeAreas = []
+        if (ListaPermisos.includes("Áreas de la Caja")) {
+            const res = await axios.get(`${URIareaCaja}${CajaActual}`);
+            ListaDeAreas = res.data
+        } else if (ListaPermisos.includes("Áreas del Usuario")) {
+            const res = await axios.get(`${URIareaUsuario}${UsuarioID}`);
+            ListaDeAreas = res.data
+        }
+        const resAreas = await axios.post(`${URIarea}areaUsuario`,
+            { listaAreas: ListaDeAreas });
+        setNombreAreas(resAreas.data);
+    };
 
     useEffect(() => {
-        getTurnos();
-        getTurnoAtendiendo();
-    }, []);
+        getNombreAreas()
+    }, [])
 
-    //No usar cola solo ordenar los elementos y usarlos en base a su fecha
     const getTurnos = async () => {
-        const res = await axios.get(`${URI}${IdAreaUsuario}`);
+        let ListaDeAreas = []
+        if (ListaPermisos.includes("Áreas de la Caja")) {
+            const res = await axios.get(`${URIareaCaja}${CajaActual}`);
+            ListaDeAreas = res.data
+
+        } else if (ListaPermisos.includes("Áreas del Usuario")) {
+            const res = await axios.get(`${URIareaUsuario}${UsuarioID}`);
+            ListaDeAreas = res.data
+        }
+        const res = await axios.post(`${URI}turnos`,
+            { lista: ListaDeAreas });
         setTurnos(res.data);
     };
 
     //Devuelve los turnos atendiendo del usuario
-    //No usar cola solo ordenar los elementos y usarlos en base a su fecha
     const getTurnoAtendiendo = async () => {
-        const res = await axios.get(`${URI}${IdAreaUsuario}/${NombreUsuario}`);
+        const NombreUsuario = localStorage.getItem("usuario");
+        const res = await axios.get(`${URI}turnos/${NombreUsuario}`);
         setTurnoAtendiendo(res.data);
     };
+
+
+    useEffect(() => {
+        getTurnos();
+        getTurnoAtendiendo();
+        const intervalo = setInterval(() => {
+            getTurnos();
+            getTurnoAtendiendo();
+        }, 10000); // Actualiza cada 30 segundos
+        // Limpia el intervalo cuando el componente se desmonta
+        return () => clearInterval(intervalo);
+    }, []);
 
     //Crear procedimiento para modificar el turno al agarrarlo y cambiarle su estado a "Atendiendo"
     const llamarTurno = async () => {
@@ -76,45 +110,55 @@ const Caja = () => {
         }
     }
 
-    //Checar cómo puedo saber a qué area corresponde el usuario, crear union de usuario con caja
     //Procedimiento para poner al turno atendiendo
     const atendiendoTurno = async (id) => {
-        const fechaActualAtendiendo = moment().format('YYYY-MM-DD HH:mm:ss');
-        await axios.put(`${URI}${id}`, {
+        const UsuarioAtendiendo = localStorage.getItem("usuario");
+        const Caja_ID = localStorage.getItem("caja_id");
+        await axios.put(`${URI}${id}/turnoAtendiendo`, {
             estatus: "Atendiendo",
-            turno_seleccionado: fechaActualAtendiendo,
-            update_by: NombreUsuario,
-            update_at: fechaActualAtendiendo,
-            fk_idcaja: 1
+            update_by: UsuarioAtendiendo,
+            fk_idcaja: Caja_ID
         })
         getTurnos();
         getTurnoAtendiendo();
     }
     //Procedimiento para terminar el turno
     const finalizaTurno = async (id) => {
-        const fechaActualFinalizar = moment().format('YYYY-MM-DD HH:mm:ss');
-        await axios.put(`${URI}${id}`, {
+        const UsuarioFinalizar = localStorage.getItem("usuario");
+        await axios.put(`${URI}${id}/turnoFinalizado`, {
             estatus: "Finalizado",
-            turno_atendido: fechaActualFinalizar,
-            update_by: NombreUsuario,
-            update_at: fechaActualFinalizar
+            update_by: UsuarioFinalizar,
         })
         //Se ejecuta finalizar turno
         setTurnoActual();
         setTurnoAtendiendo();
         getTurnos();
-        getTurnoAtendiendo()
+        getTurnoAtendiendo();
     }
 
+    //Título del Área que atiende la caja
+    const TextoAreaUsuario = "Area: " + nombreAreas;
 
+    //Título del Área que atiende la caja
+    const CajaUsuario = localStorage.getItem("nombre_caja");
+    const TextoCajaUsuario = "Caja: " + CajaUsuario;
 
+    //**************                             ***************************
+    //Me falta obtener la lista de las áreas a las que pertenece o la caja o el usuario dependiendo del permiso
     return (
         <>
             {/* Contenedor del encabezado */}
             <Encabezado nombreIcon="bi bi-box-seam-fill" textoTitulo="Caja"></Encabezado>
+            {/* Botón para regresar home */}
+            <div className="d-flex justify-content-start align-items-center"
+                style={{ margin: "1vh" }}>
+                <Button variant="faded" className="bg-orange text-white"
+                    onClick={goBack}>
+                    Home
+                </Button>
+            </div>
             {/* División de la Lista de Espera e Información del Turno */}
             <div className="centrarCaja">
-
                 {/* Contenedor de la Lista de Espera */}
                 <div className="col-sm-12 col-md-3" style={{
                     paddingLeft: 5
@@ -123,14 +167,21 @@ const Caja = () => {
                         <div style={{ marginTop: 10, marginBottom: 10 }}>
                             <TextoTitulo tamaño={"h4"} texto="Lista de Espera" color="white" ></TextoTitulo>
                         </div>
-                        {turnos.map((turno) => (
-                            <TextoTitulo
-                                key={turno.id} // Utiliza una clave única para cada elemento
-                                tamaño="h5"
-                                texto={`${turno.nombre_area} ${turno.id}`}
-                                color="white"
-                            />
-                        ))}
+                        {turnos.length === 0 ? (
+                            <div style={{
+                                color: "white", textAlign: "center",
+                                fontSize: "5vh"
+                            }}>No hay turnos disponibles</div>
+                        ) : (
+                            turnos.map((turno) => (
+                                <TextoTitulo
+                                    key={turno.id}
+                                    tamaño="h5"
+                                    texto={`${turno.nombre_area} ${turno.id}`}
+                                    color="white"
+                                />
+                            ))
+                        )}
                     </div>
                 </div>
 
@@ -140,8 +191,9 @@ const Caja = () => {
                     {/* Contenedor Principal de la información del turno */}
                     <div className="d-flex flex-column align-content-center">
                         {/* Textos del título */}
-                        <div className="flex-row ">
+                        <div className="flex-row align-self-center">
                             <TextoTitulo tamaño={"h2"} texto="Turno Actual"></TextoTitulo>
+                            <TextoTitulo tamaño={"h2"} texto={TextoCajaUsuario}></TextoTitulo>
                             <TextoTitulo tamaño={"h3"} texto={TextoAreaUsuario}></TextoTitulo>
                         </div>
 
