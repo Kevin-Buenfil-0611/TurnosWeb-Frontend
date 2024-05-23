@@ -4,14 +4,50 @@ import CompShowUsuarios from './comps/ShowUsuarios';
 import CompShowCajas from './comps/ShowCaja';
 import CompShowPermisos from "./comps/ShowPermisos";
 import CompShowVideos from "./comps/ShowVideos";
+import axios from "axios";
 import "./styles/stylesCrud.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@nextui-org/react";
+
+const URILogin = 'http://localhost:8000/login/comprobarToken';
 
 const Crud = () => {
     //Variables para navegar
     const navigate = useNavigate();
-    const goBack = () => navigate('/Home');
+    const location = useLocation();
+    const pageLogin = location.state?.from?.pathname || "/Login";
+    const noAutorizado = location.state?.from?.pathname || "/NoAutorizado";
+    const goBack = () => navigate('/');
+
+    //Información del local storage del usuario
+    const permisosStorage = localStorage.getItem("listaPermisos");
+    let listaPermisos = permisosStorage.split(',');
+
+    // ************** Verificar Token del usuario  *************
+    var InfoAcceso;
+    async function ComprobarToken() {
+        const tokenUsuario = localStorage.getItem('x-token');
+        const usuarioID = localStorage.getItem("usuario_id");
+        const response = await axios.get(`${URILogin}`, {
+            headers: {
+                token: tokenUsuario
+            },
+            body: {
+                usuario_id: usuarioID
+            }
+        })
+        return InfoAcceso = response.data
+    }
+    ComprobarToken().then(() => {
+        if (InfoAcceso.autorizado === false) {
+            navigate(pageLogin, { replace: true });
+        } else {
+            localStorage.setItem('x-token', InfoAcceso.token);
+            if (!listaPermisos.includes("Administrador")) {
+                navigate(noAutorizado, { replace: true });
+            }
+        }
+    });
 
     return (
         <>
@@ -56,8 +92,8 @@ const Crud = () => {
                     >Permisos</button>
                 </li>
                 <li className="nav-item pill-5" role="presentation">
-                    <button className="nav-link" id="pills-permisos-tab" data-bs-toggle="pill" data-bs-target="#pills-videos"
-                        type="button" role="tab" aria-controls="pills-permisos" aria-selected="false"
+                    <button className="nav-link" id="pills-videos-tab" data-bs-toggle="pill" data-bs-target="#pills-videos"
+                        type="button" role="tab" aria-controls="pills-videos" aria-selected="false"
                         style={{ margin: "3px 5px 3px 5px" }}
                     >Videos</button>
                 </li>
@@ -85,9 +121,9 @@ const Crud = () => {
                     aria-labelledby="pills-permisos-tab" tabIndex="0">
                     <CompShowPermisos></CompShowPermisos>
                 </div>
-                {/* Pestaña tabla Permisos */}
+                {/* Pestaña tabla Videos */}
                 <div className="tab-pane fade" id="pills-videos" role="tabpanel"
-                    aria-labelledby="pills-permisos-tab" tabIndex="0">
+                    aria-labelledby="pills-videos-tab" tabIndex="0">
                     <CompShowVideos></CompShowVideos>
                 </div>
             </div>

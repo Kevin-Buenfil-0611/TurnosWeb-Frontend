@@ -12,6 +12,7 @@ import { EyeOutlined, EyeInvisibleOutlined, QuestionCircleOutlined } from "@ant-
 //Dirección del backend para acceder a los métodos de la base de datos
 const URI = 'http://localhost:8000/usuarios/';
 const URIareas = 'http://localhost:8000/areas/';
+const URIusuarios = 'http://localhost:8000/usuarios/';
 const URIcajas = 'http://localhost:8000/cajas/';
 const URIpermisos = 'http://localhost:8000/permisos/';
 const URIpermisosusuarios = 'http://localhost:8000/permisousuario/';
@@ -200,7 +201,7 @@ const CompShowUsuarios = () => {
         e.preventDefault();
         const InfoNuevaPermisos = await axios.put(`${URIpermisosusuarios}${idUsuarioMod}`, {
             permisosMod: nuevosPermisos, usuarios_id: idUsuarioMod,
-            update_by: usuarioModify// update_at: fechaActualModify
+            update_by: usuarioModify
         });
         setPermisoUsuarios(InfoNuevaPermisos.data);
         resetPermisosForm();
@@ -293,11 +294,13 @@ const CompShowUsuarios = () => {
     const modifyCajaUsuario = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
         e.preventDefault();
+        console.log(nuevasCajas)
         const InfoNuevasCajas = await axios.put(`${URIcajausuarios}${idUsuarioModCajas}`, {
             cajaMod: nuevasCajas, usuario_id: idUsuarioModCajas,
             update_by: usuarioModify
         });
         setCajaUsuarios(InfoNuevasCajas.data);
+        getCajaUsuarios();
         resetCajasForm();
     }
     //Obtiene las cajas que tiene el usuario
@@ -553,6 +556,39 @@ const CompShowUsuarios = () => {
         setTelefonoViejo('');
     }
 
+    // ************** Modal contrseña del Usuario *********************
+    const [contraseñaUser, setContraseñaUser] = useState('');
+    const [usuarioContra_ID, setUsuarioContra_ID] = useState('')
+
+    const getContraseña = async (usuario_id) => {
+        setUsuarioContra_ID(usuario_id);
+    }
+    //Validar la información del input de Contraseña y repetir la contraseña
+    const [isVisiblePasswordMod, setIsVisiblePasswordMod] = useState(false);
+    const toggleVisibilityPasswordMod = () => setIsVisiblePasswordMod(!isVisiblePasswordMod);
+    const validateContraseñaMod = (contraseñaUser) => contraseñaUser.trim() !== '';
+
+    const isValidPasswordMod = React.useMemo(() => {
+        return validateContraseñaMod(contraseñaUser);
+    }, [contraseñaUser]);
+
+    const modifycontraseña = async (e) => {
+        e.preventDefault();
+        const contraNuevaSHA256 = CryptoJS.SHA256(contraseñaUser).toString(CryptoJS.enc.Hex)
+        const usuarioUpdate = localStorage.getItem("usuario");
+        await axios.put(`${URIusuarios}${usuarioContra_ID}/getp`, {
+            id: usuarioContra_ID,
+            contraseña: contraNuevaSHA256,
+            update_by: usuarioUpdate
+        });
+    }
+
+    const resetPasswordForm = () => {
+        setContraseñaUser('');
+        setUsuarioContra_ID('');
+    }
+
+
     return (
         <>
             {/* Componente del título */}
@@ -645,6 +681,19 @@ const CompShowUsuarios = () => {
                                             }}>
                                             Áreas
                                         </button>
+                                        <button
+                                            className="btn btn-info"
+                                            data-bs-toggle="modal" data-bs-target="#modal-contraseña-user"
+                                            style={{
+                                                color: "white", backgroundColor: "#6F4E37",
+                                                border: 0, margin: "3px 5px 3px 5px"
+                                            }}
+                                            onClick={() => {
+                                                resetPasswordForm();
+                                                getContraseña(usuario.id);
+                                            }}>
+                                            Contraseña
+                                        </button>
                                     </td>
                                 </tr>
                             ))
@@ -683,7 +732,8 @@ const CompShowUsuarios = () => {
                             {/* Botón X de cerrar */}
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
                                 onClick={() => {
-                                    getUsuarios(); resetCreateForm();
+                                    resetCreateForm();
+                                    getUsuarios();
                                     getDatospers();
                                 }}></button>
                         </div>
@@ -1162,6 +1212,68 @@ const CompShowUsuarios = () => {
                                     getDatospers();
                                 }}>Cerrar</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* ------- Modal Ver Contraseña -------*/}
+            <div className="modal fade" id="modal-contraseña-user" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            {/* Título del Modal */}
+                            <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Contraseña del Usuario</h1>
+                            {/* Botón X de cerrar */}
+                            <button type="button"
+                                className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        {/* Ver contraseña del usuario */}
+                        <div className="modal-body">
+                            <form onSubmit={modifycontraseña}>
+                                <Input
+                                    isClearable
+                                    value={contraseñaUser}
+                                    label="Contraseña"
+                                    variant="bordered"
+                                    className="max-w-xs"
+                                    onChange={(e) => setContraseñaUser(e.target.value)}
+                                    endContent={
+                                        <button className="focus:outline-none" type="button" onClick={toggleVisibilityPasswordMod}>
+                                            {isVisiblePasswordMod ? (
+                                                <EyeOutlined className="text-2xl text-default-400 pointer-events-none" />
+                                            ) : (
+                                                <EyeInvisibleOutlined className="text-2xl text-default-400 pointer-events-none" />
+                                            )}
+                                        </button>
+                                    }
+                                    type={isVisiblePasswordMod ? "text" : "password"}
+                                />
+                                <div style={{ marginTop: 15 }}></div>
+                                {/* Botón Guardar */}
+                                <div className="d-flex justify-content-center">
+                                    {isValidPasswordMod ? (
+                                        // Si isValidForm es true, el botón se muestra
+                                        <Button variant="faded" className="bg-orange text-white"
+                                            type="submit" data-bs-dismiss="modal" >
+                                            Guardar
+                                        </Button>
+                                    ) : (
+                                        // Si isValidForm es false, no se muestra el botón
+                                        <>
+                                            <Button isDisabled variant="faded" className="bg-orange text-white"
+                                                type="submit" data-bs-dismiss="modal" >
+                                                Guardar
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                    <div className="modal-footer">
+                        {/* Modal de Cerrar */}
+                        <button>Cerrar</button>
                     </div>
                 </div>
             </div>

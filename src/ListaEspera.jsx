@@ -5,35 +5,55 @@ import ReproductorVideo from "./comps/ReproductorVideo";
 
 const URI = 'http://localhost:8000/turnos/';
 const URITurno = 'http://localhost:8000/turnos/siguiente';
+const URIConfig = 'http://localhost:8000/config/nombre';
 
 
 const ListaEspera = () => {
-    //Procedimiento para mostrar todas los Turnos
-    const [turnos, setTurnos] = useState([])
-    useEffect(() => {
-        getTurnos();
-        const intervalo = setInterval(() => {
-            getTurnos();
-        }, 10000); // Actualiza cada 30 segundos
-        // Limpia el intervalo cuando el componente se desmonta
-        return () => clearInterval(intervalo);
-    }, []);
+    //Procedimiento para obtener datos de la configuración
+    const [resetLista, setResetLista] = useState(null);
 
+    const getConfig = async () => {
+        const res = await axios.post(URIConfig, {
+            nombre: 'Reset Lista de Turnos'
+        })
+        setResetLista(res.data.valor)
+    }
+
+    useEffect(() => {
+        getConfig();
+    }, [])
+
+    //Procedimiento para mostrar todas los Turnos
+    const [turnos, setTurnos] = useState([]);
     const getTurnos = async () => {
         const res = await axios.get(URI)
         setTurnos(res.data)
     }
+    useEffect(() => {
+        if (resetLista !== null) {
+            getTurnos();
+            const intervalo = setInterval(() => {
+                getTurnos();
+            }, resetLista);
+
+            return () => clearInterval(intervalo);
+        }
+    }, [resetLista]); // Dependencia en resetLista
+
+
     //Procedimiento para mostrar todas los Turnos
     const [turnoNuevo, setTurnoNuevo] = useState([])
     useEffect(() => {
-        getTurnoNuevo();
-        const intervalo = setInterval(() => {
+        if (resetLista !== null) {
             getTurnoNuevo();
-        }, 10000); // Actualiza cada 10 segundos
+            const intervalo = setInterval(() => {
+                getTurnoNuevo();
+            }, resetLista); // Actualiza cada 10 segundos
 
-        // Limpia el intervalo cuando el componente se desmonta
-        return () => clearInterval(intervalo);
-    }, [])
+            // Limpia el intervalo cuando el componente se desmonta
+            return () => clearInterval(intervalo);
+        }
+    }, [resetLista])
 
     const getTurnoNuevo = async () => {
         const resTurno = await axios.get(URITurno)

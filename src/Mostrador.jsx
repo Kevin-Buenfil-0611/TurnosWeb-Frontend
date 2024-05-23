@@ -6,16 +6,51 @@ import axios from "axios";
 import { Popconfirm } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@nextui-org/react";
 
-const URI = 'http://localhost:8000/areas/'
-const URITurnos = 'http://localhost:8000/turnos/'
+const URI = 'http://localhost:8000/areas/';
+const URITurnos = 'http://localhost:8000/turnos/';
+const URILogin = 'http://localhost:8000/login/comprobarToken';
+
 const Mostrador = () => {
 
     //Variables para navegar
     const navigate = useNavigate();
-    const goBack = () => navigate('/Home');
+    const location = useLocation();
+    const pageLogin = location.state?.from?.pathname || "/Login";
+    const noAutorizado = location.state?.from?.pathname || "/NoAutorizado";
+    const goBack = () => navigate('/');
+
+    //Información del local storage del usuario
+    const permisosStorage = localStorage.getItem("listaPermisos");
+    let listaPermisos = permisosStorage.split(',');
+
+    // ************** Verificar Token del usuario  *************
+    var InfoAcceso;
+    async function ComprobarToken() {
+        const tokenUsuario = localStorage.getItem('x-token');
+        const usuarioID = localStorage.getItem("usuario_id");
+        const response = await axios.get(`${URILogin}`, {
+            headers: {
+                token: tokenUsuario
+            },
+            body: {
+                usuario_id: usuarioID
+            }
+        })
+        return InfoAcceso = response.data
+    }
+    ComprobarToken().then(() => {
+        if (InfoAcceso.autorizado === false) {
+            navigate(pageLogin, { replace: true });
+        } else {
+            localStorage.setItem('x-token', InfoAcceso.token);
+            if (!listaPermisos.includes("Mostrador")) {
+                navigate(noAutorizado, { replace: true });
+            }
+        }
+    });
 
     //Procedimiento para mostrar todas las Áreas
     const [areas, setAreas] = useState([])
@@ -50,7 +85,6 @@ const Mostrador = () => {
                             <text className="textAreas">{area.nombre_area}</text>
                         </button>
                     </Popconfirm>
-
                 ))}
             </div>
         );

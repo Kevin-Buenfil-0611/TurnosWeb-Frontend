@@ -8,7 +8,6 @@ import NoAutorizado from './NoAutorizado';
 import NoAutenticado from './NoAutenticado';
 import Layout from './Layout';
 import { Routes, Route } from 'react-router-dom';
-import RequireAuth from './RequireAuth';
 import HomePage from './HomePage';
 
 
@@ -18,25 +17,25 @@ function App() {
         <Routes>
             <Route path='/' element={<Layout />}>
                 {/* Rutas públicas */}
-                <Route path='/' element={<Login />} />
+                <Route path='/Login' element={<Login />} />
                 <Route path='ListaEspera' element={<ListaEspera />} />
                 <Route path='NoAutorizado' element={<NoAutorizado />} />
                 <Route path='NoAutenticado' element={<NoAutenticado />} />
 
                 {/* Rutas privadas */}
-                <Route element={<RequireAuth permisosConcedidos={["Home"]} />}>
-                    <Route path='/Home' element={<HomePage />} />
+                <Route >
+                    <Route path='/' element={<HomePage />} />
                 </Route>
 
-                <Route element={<RequireAuth permisosConcedidos={["Administrador"]} />}>
+                <Route>
                     <Route path='Crud' element={<Crud />} />
                 </Route>
 
-                <Route element={<RequireAuth permisosConcedidos={["Caja"]} />}>
+                <Route >
                     <Route path='Caja' element={<Caja />} />
                 </Route>
 
-                <Route element={<RequireAuth permisosConcedidos={["Mostrador"]} />}>
+                <Route >
                     <Route path='Mostrador' element={<Mostrador />} />
                 </Route>
 

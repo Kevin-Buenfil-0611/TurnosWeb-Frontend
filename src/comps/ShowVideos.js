@@ -4,8 +4,6 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-//const URIVideos = 'http://localhost:8000/videos/obtenerlistavideos';
-
 const CompShowVideos = () => {
     const [fileList, setFileList] = useState([]);
     const [videos, setVideos] = useState([]);
@@ -96,10 +94,6 @@ const CompShowVideos = () => {
         }
     };
 
-
-
-    //Agregar un logo del ayuntamiento arriba a la izquierda del turno actual, en la columna donde está
-    //el reproductor
     return (
         <>
             {/* Resto de tu componente */}

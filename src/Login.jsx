@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import useAuth from "./hooks/useAuth";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import './styles/stylesLogin.css';
@@ -10,13 +9,12 @@ import { Input, Button } from "@nextui-org/react";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 
 //Dirección del backend para acceder a los métodos de la base de datos
-const URI = 'http://localhost:8000/login/'
+const URI = 'http://localhost:8000/login/findUser'
 const Login = () => {
     //Constantes para navegar  me quede en el video min 17.46
-    const { setAuth } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/Home";
+    const from = location.state?.from?.pathname || "/";
 
     //Mensajes de Error
     const [errMsg, setErrMsg] = useState('')
@@ -43,7 +41,6 @@ const Login = () => {
 
     //Validar si el inicio de sesión es correcto
     const find = async (e) => {
-        localStorage.clear();
         e.preventDefault();
         try {
             const contraSHA256 = CryptoJS.SHA256(contraseña.trim()).toString(CryptoJS.enc.Hex)
@@ -54,18 +51,13 @@ const Login = () => {
             });
 
             if (autentificacion.data.autorizado) {
+                const token = autentificacion.data.token;
                 //Guardar en local storage 
-
                 localStorage.setItem("autorizado", autentificacion.data.autorizado);
                 localStorage.setItem("listaPermisos", autentificacion.data.permisos);
                 localStorage.setItem("usuario", autentificacion.data.usuario);
                 localStorage.setItem("usuario_id", autentificacion.data.usuario_id);
-
-                const autorizado = localStorage.getItem("autorizado");
-                const permisosStorage = localStorage.getItem("listaPermisos");
-
-                let listaPermisos = permisosStorage.split(',');
-                setAuth({ usuario, autorizado, listaPermisos });
+                localStorage.setItem('x-token', token);
                 navigate(from, { replace: true });
             } else {
                 setErrMsg(autentificacion.data.message);

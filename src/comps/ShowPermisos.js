@@ -82,9 +82,9 @@ const CompShowPermisos = () => {
     const modify = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
         e.preventDefault();
-        await axios.put(`${URI}updateNombre`, {
+        await axios.put(`${URI}${PermisoModId}/updateNombre`, {
             nombre: nombrePermisoMod, descripcion: descripcionPermisoMod,
-            update_by: usuarioModify, permiso_id: PermisoModId
+            update_by: usuarioModify
         });
         getPermisos();
     }

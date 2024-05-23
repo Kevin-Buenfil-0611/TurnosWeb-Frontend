@@ -6,7 +6,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { NextUIProvider } from "@nextui-org/react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './AuthProvider';
 import App from './App';
 
 const root = document.getElementById('root');
@@ -15,11 +14,9 @@ ReactDOM.createRoot(root).render(
     <React.StrictMode>
         <NextUIProvider>
             <BrowserRouter>
-                <AuthProvider>
-                    <Routes>
-                        <Route path='/*' element={<App />} />
-                    </Routes>
-                </AuthProvider>
+                <Routes>
+                    <Route path='/*' element={<App />} />
+                </Routes>
             </BrowserRouter>
         </NextUIProvider>
     </React.StrictMode>

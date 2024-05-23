@@ -1,12 +1,11 @@
 import React from "react";
-import moment from "moment";
 import './styles/stylesCaja.css';
 import axios from "axios";
 import Encabezado from "./comps/encabezado";
 import TextoTitulo from "./comps/textoTitulos";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Popconfirm } from "antd";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
@@ -14,19 +13,52 @@ const URI = 'http://localhost:8000/turnos/';
 const URIarea = 'http://localhost:8000/areas/';
 const URIareaCaja = 'http://localhost:8000/areacaja/';
 const URIareaUsuario = 'http://localhost:8000/areausuario/';
+const URILogin = 'http://localhost:8000/login/comprobarToken';
 
 const Caja = () => {
     //Variables para navegar
     const navigate = useNavigate();
-    const goBack = () => navigate('/Home');
+    const location = useLocation();
+    const pageLogin = location.state?.from?.pathname || "/Login";
+    const noAutorizado = location.state?.from?.pathname || "/NoAutorizado";
+    const goBack = () => navigate('/');
+
+    //Permisos del usuario
+    const permisosStorage = localStorage.getItem("listaPermisos");
+    let listaPermisos = permisosStorage.split(',');
+
+
+    // ************** Verificar Token del usuario  *************
+    var InfoAcceso;
+    async function ComprobarToken() {
+        const tokenUsuario = localStorage.getItem('x-token');
+        const usuarioID = localStorage.getItem("usuario_id");
+        const response = await axios.get(`${URILogin}`, {
+            headers: {
+                token: tokenUsuario
+            },
+            body: {
+                usuario_id: usuarioID
+            }
+        })
+        return InfoAcceso = response.data
+    }
+    ComprobarToken().then(() => {
+        if (InfoAcceso.autorizado === false) {
+            navigate(pageLogin, { replace: true });
+        } else {
+            localStorage.setItem('x-token', InfoAcceso.token);
+            if (!listaPermisos.includes("Caja")) {
+                navigate(noAutorizado, { replace: true });
+            }
+        }
+    });
     //Acciones del Modal
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     //Información del Usuario
     const CajaActual = localStorage.getItem("caja_id");
     const UsuarioID = localStorage.getItem("usuario_id");
-    const permisosStorage = localStorage.getItem("listaPermisos");
-    let ListaPermisos = permisosStorage.split(',');
 
     //Procedimiento para mostrar todas los Turnos
     const [turnos, setTurnos] = useState([]);
@@ -36,10 +68,10 @@ const Caja = () => {
     //******************* Modificar para que permita leer una lista de áreas *********************
     const getNombreAreas = async () => {
         let ListaDeAreas = []
-        if (ListaPermisos.includes("Áreas de la Caja")) {
+        if (listaPermisos.includes("Áreas de la Caja")) {
             const res = await axios.get(`${URIareaCaja}${CajaActual}`);
             ListaDeAreas = res.data
-        } else if (ListaPermisos.includes("Áreas del Usuario")) {
+        } else if (listaPermisos.includes("Áreas del Usuario")) {
             const res = await axios.get(`${URIareaUsuario}${UsuarioID}`);
             ListaDeAreas = res.data
         }
@@ -54,11 +86,11 @@ const Caja = () => {
 
     const getTurnos = async () => {
         let ListaDeAreas = []
-        if (ListaPermisos.includes("Áreas de la Caja")) {
+        if (listaPermisos.includes("Áreas de la Caja")) {
             const res = await axios.get(`${URIareaCaja}${CajaActual}`);
             ListaDeAreas = res.data
 
-        } else if (ListaPermisos.includes("Áreas del Usuario")) {
+        } else if (listaPermisos.includes("Áreas del Usuario")) {
             const res = await axios.get(`${URIareaUsuario}${UsuarioID}`);
             ListaDeAreas = res.data
         }
@@ -143,8 +175,7 @@ const Caja = () => {
     const CajaUsuario = localStorage.getItem("nombre_caja");
     const TextoCajaUsuario = "Caja: " + CajaUsuario;
 
-    //**************                             ***************************
-    //Me falta obtener la lista de las áreas a las que pertenece o la caja o el usuario dependiendo del permiso
+
     return (
         <>
             {/* Contenedor del encabezado */}

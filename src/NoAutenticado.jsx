@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const NoAutenticado = () => {
     const navigate = useNavigate();
-    const goBack = () => navigate('/');
+    const goBack = () => navigate('/Login');
 
     return (
         <>

@@ -12,21 +12,47 @@ import {
 //Dirección del backend
 const URICajaUsuario = 'http://localhost:8000/cajausuario/';
 const URICaja = 'http://localhost:8000/cajas/';
+const URILogin = 'http://localhost:8000/login/comprobarToken';
 
 const HomePage = () => {
     //Rutas de navegación
     const navigate = useNavigate();
     const location = useLocation();
-    const goBack = () => navigate('/');
+    const pageLogin = location.state?.from?.pathname || "/Login";
     const pageCaja = location.state?.from?.pathname || "/Caja";
     const pageCrud = location.state?.from?.pathname || "/Crud";
     const pageMostrador = location.state?.from?.pathname || "/Mostrador";
     const noAutorizado = location.state?.from?.pathname || "/NoAutorizado";
 
-    //Información del local storage para validar credenciales del usuario
-    const autorizado = localStorage.getItem("autorizado");
-    const permisosStorage = localStorage.getItem("listaPermisos");
+    //Información del local storage del usuario
+    const permisosStorage = localStorage.getItem("listaPermisos") || "";
     let listaPermisos = permisosStorage.split(',');
+
+    // ************** Verificar Token del usuario  *************
+    var InfoAcceso;
+    async function ComprobarToken() {
+        const tokenUsuario = localStorage.getItem('x-token');
+        const usuarioID = localStorage.getItem("usuario_id");
+        const response = await axios.get(`${URILogin}`, {
+            headers: {
+                token: tokenUsuario
+            },
+            body: {
+                usuario_id: usuarioID
+            }
+        })
+        return InfoAcceso = response.data
+    }
+    ComprobarToken().then(() => {
+        if (InfoAcceso.autorizado === false) {
+            navigate(pageLogin, { replace: true });
+        } else {
+            localStorage.setItem('x-token', InfoAcceso.token);
+            if (!listaPermisos.includes("Home")) {
+                navigate(noAutorizado, { replace: true });
+            }
+        }
+    });
 
     //Acciones del modal
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -44,11 +70,15 @@ const HomePage = () => {
         getCajasUsuario();
     }, []);
 
+    //Devuelve al login
+    const goLogin = async () => {
+        navigate(pageLogin, { replace: true });
+    }
     //Dependiendo de la área de caja o usuario que se ocupe, actualizar los id de las areas en ls
     const goCaja = async () => {
         //Valida los permisos y en caso de notenerlos, lo redirige a una página de error
         try {
-            if (autorizado) {
+            if (listaPermisos.includes("Caja")) {
                 const res = await axios.get(`${URICaja}${cajaActual}`);
                 const caja = res.data
                 localStorage.setItem("caja_id", cajaActual);
@@ -65,8 +95,7 @@ const HomePage = () => {
     const goCrud = async () => {
         //Valida los permisos y en caso de notenerlos, lo redirige a una página de error
         try {
-            if (autorizado) {
-
+            if (listaPermisos.includes("Administrador")) {
                 navigate(pageCrud, { replace: true });
             } else {
                 navigate(noAutorizado, { replace: true });
@@ -79,7 +108,7 @@ const HomePage = () => {
     const goMostrador = async () => {
         //Valida los permisos y en caso de notenerlos, lo redirige a una página de error
         try {
-            if (autorizado) {
+            if (listaPermisos.includes("Mostrador")) {
                 navigate(pageMostrador, { replace: true });
             } else {
                 navigate(noAutorizado, { replace: true });
@@ -89,15 +118,6 @@ const HomePage = () => {
         }
     }
 
-    const goNoAutorizado = async () => {
-        //Valida los permisos y en caso de notenerlos, lo redirige a una página de error
-        try {
-            navigate(noAutorizado, { replace: true });
-
-        } catch (err) {
-            navigate(noAutorizado, { replace: true });
-        }
-    }
 
     return (
         <>
@@ -107,7 +127,7 @@ const HomePage = () => {
                 <div className="d-flex justify-content-start align-items-center"
                     style={{ margin: "1vh" }}>
                     <Button variant="faded" className="bg-orange text-white"
-                        onClick={goBack}>
+                        onClick={goLogin}>
                         Login
                     </Button>
                 </div>

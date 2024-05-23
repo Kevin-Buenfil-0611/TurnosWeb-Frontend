@@ -117,9 +117,10 @@ const CompShowCajas = () => {
     const modifyNombreCaja = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
         e.preventDefault();
-        await axios.put(`${URI}${cajaModId}/updateNombreCaja`, {
+        await axios.post(`${URI}/updateNombreCaja`, {
             nombre_caja: nombreCajaMod,
-            update_by: usuarioModify
+            update_by: usuarioModify,
+            caja_id: cajaModId
         });
         getCajas();
     }
