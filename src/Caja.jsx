@@ -314,7 +314,6 @@ const Caja = () => {
                             </div>
                         </div>
 
-
                         {/* Botón para llamar turno */}
                         <div className="d-flex justify-content-center">
                             <Popconfirm title='Llamar nuevo turno'

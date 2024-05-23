@@ -74,7 +74,7 @@ const Mostrador = () => {
         const gridSize = Math.ceil(Math.sqrt(areas.length));
         return (
             <div className="grid" style={{ gridTemplateColumns: `repeat(${gridSize}, 1fr)` }}>
-                {areas.map((area) => (
+                {areas ? (areas.map((area) => (
                     <Popconfirm title='Crear turno'
                         description="Confirma la creación del turno"
                         onConfirm={() => createTurno(area.id)}
@@ -85,7 +85,9 @@ const Mostrador = () => {
                             <text className="textAreas">{area.nombre_area}</text>
                         </button>
                     </Popconfirm>
-                ))}
+                ))) : (
+                    <></>
+                )}
             </div>
         );
     }
