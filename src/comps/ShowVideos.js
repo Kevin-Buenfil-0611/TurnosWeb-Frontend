@@ -106,7 +106,7 @@ const CompShowVideos = () => {
             </div>
             <div className="d-flex flex-column justify-content-center align-items-center"
                 style={{ marginBottom: "3.5vh" }}>
-                <h2>Videos Subidos</h2>
+                <h2>Videos</h2>
             </div>
 
             <div className="d-flex flex-column justify-content-center align-items-start"

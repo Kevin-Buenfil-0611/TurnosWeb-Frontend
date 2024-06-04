@@ -20,6 +20,10 @@ const URIcajausuarios = 'http://localhost:8000/cajausuario/';
 const URIdatospers = 'http://localhost:8000/datospers/';
 const URIareausuarios = 'http://localhost:8000/areausuario/';
 
+var InfoAreaUsuario = []
+var InfoCajaUsuario = []
+var InfoPermisoUsuario = []
+
 const CompShowUsuarios = () => {
     //Procedimiento para mostrar todas los Usuarios
     const [usuarios, setUsuarios] = useState([])
@@ -185,25 +189,25 @@ const CompShowUsuarios = () => {
     // ***************** Agregar Permisos de Usuario *******************
 
     //Procedimiento para mostrar todas los registros de la tabla PermisosUsuarios
-    const [permisousuarios, setPermisoUsuarios] = useState([])
+    //const [permisousuarios, setPermisoUsuarios] = useState([])
     useEffect(() => {
         getPermisoUsuarios()
     }, [])
 
     const getPermisoUsuarios = async () => {
         const res = await axios.get(URIpermisosusuarios)
-        setPermisoUsuarios(res.data)
+        //setPermisoUsuarios(res.data)
+        InfoPermisoUsuario = res.data
     }
     //Procedimiento para crear/modificar los permisos por usuario
     const modify = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
-        //const fechaActualModify = moment().format('YYYY-MM-DD HH:mm:ss');
         e.preventDefault();
         const InfoNuevaPermisos = await axios.put(`${URIpermisosusuarios}${idUsuarioMod}`, {
             permisosMod: nuevosPermisos, usuarios_id: idUsuarioMod,
             update_by: usuarioModify
         });
-        setPermisoUsuarios(InfoNuevaPermisos.data);
+        InfoPermisoUsuario = InfoNuevaPermisos.data;
         resetPermisosForm();
     }
     //Obtiene las permisos que tiene el usuario
@@ -214,7 +218,7 @@ const CompShowUsuarios = () => {
 
     const getPermisosPorUsuario = (usuario_id) => {
         try {
-            let ListaPermisosPerUsuario = permisousuarios.filter(
+            let ListaPermisosPerUsuario = InfoPermisoUsuario.filter(
                 permisousuario => permisousuario.usuario_id === usuario_id).map(
                     permisousuario => permisousuario.permiso_id);
 
@@ -281,25 +285,25 @@ const CompShowUsuarios = () => {
     // ***************** Agregar Cajas de Usuario *******************
 
     //Procedimiento para mostrar todas los registros de la tabla PermisosUsuarios
-    const [cajausuarios, setCajaUsuarios] = useState([])
+    //const [cajausuarios, setCajaUsuarios] = useState([])
     useEffect(() => {
         getCajaUsuarios()
     }, [])
 
     const getCajaUsuarios = async () => {
         const res = await axios.get(URIcajausuarios)
-        setCajaUsuarios(res.data)
+        //setCajaUsuarios(res.data)
+        InfoCajaUsuario = res.data
     }
     //Procedimiento para crear/modificar las cajas por usuario
     const modifyCajaUsuario = async (e) => {
         const usuarioModify = localStorage.getItem("usuario");
         e.preventDefault();
-        console.log(nuevasCajas)
         const InfoNuevasCajas = await axios.put(`${URIcajausuarios}${idUsuarioModCajas}`, {
             cajaMod: nuevasCajas, usuario_id: idUsuarioModCajas,
             update_by: usuarioModify
         });
-        setCajaUsuarios(InfoNuevasCajas.data);
+        InfoCajaUsuario = InfoNuevasCajas.data;
         getCajaUsuarios();
         resetCajasForm();
     }
@@ -310,7 +314,7 @@ const CompShowUsuarios = () => {
 
     const getCajasPorUsuario = (usuario_id) => {
         try {
-            let ListaCajasPerUsuario = cajausuarios.filter(
+            let ListaCajasPerUsuario = InfoCajaUsuario.filter(
                 cajausuario => cajausuario.usuario_id === usuario_id).map(
                     cajausuario => cajausuario.caja_id);
             setNuevasCajas(ListaCajasPerUsuario);
@@ -374,14 +378,15 @@ const CompShowUsuarios = () => {
     // ***************** Agregar Areas del Usuario *******************
 
     //Procedimiento para mostrar todas los registros de la tabla PermisosUsuarios
-    const [areausuarios, setAreaUsuarios] = useState([])
+    //const [areausuarios, setAreaUsuarios] = useState([])
     useEffect(() => {
         getAreaUsuarios()
     }, [])
 
     const getAreaUsuarios = async () => {
         const res = await axios.get(URIareausuarios)
-        setAreaUsuarios(res.data)
+        //setAreaUsuarios(res.data)
+        InfoAreaUsuario = res.data
     }
     //Procedimiento para crear/modificar las cajas por usuario
     const modifyAreaUsuario = async (e) => {
@@ -391,7 +396,7 @@ const CompShowUsuarios = () => {
             areasMod: nuevasAreas, usuario_id: idUsuarioModAreas,
             update_by: usuarioModify
         });
-        setAreaUsuarios(InfoNuevasAreas.data);
+        InfoAreaUsuario = InfoNuevasAreas.data;
         resetAreasForm();
     }
     //Obtiene las cajas que tiene el usuario
@@ -401,7 +406,7 @@ const CompShowUsuarios = () => {
 
     const getAreasPorUsuario = (usuario_id) => {
         try {
-            let ListaAreasPerUsuario = areausuarios.filter(
+            let ListaAreasPerUsuario = InfoAreaUsuario.filter(
                 areausuario => areausuario.usuario_id === usuario_id).map(
                     areausuario => areausuario.area_id);
             setNuevasAreas(ListaAreasPerUsuario);
@@ -630,7 +635,9 @@ const CompShowUsuarios = () => {
                                                 color: "white", backgroundColor: "#004DDE",
                                                 border: 0, margin: "3px 5px 3px 5px"
                                             }}
-                                            onClick={() => {
+                                            onClick={async () => {
+                                                await getPermisoUsuarios();
+                                                resetPermisosForm();
                                                 getPermisos();
                                                 getPermisosPorUsuario(usuario.id);
                                             }}>
@@ -658,10 +665,10 @@ const CompShowUsuarios = () => {
                                                 color: "white", backgroundColor: "#FA770F",
                                                 border: 0, margin: "3px 5px 3px 5px"
                                             }}
-                                            onClick={() => {
+                                            onClick={async () => {
+                                                await getCajaUsuarios();
                                                 resetCajasForm();
                                                 getCajas();
-                                                getCajaUsuarios();
                                                 getCajasPorUsuario(usuario.id);
                                             }}>
                                             Cajas
@@ -673,10 +680,10 @@ const CompShowUsuarios = () => {
                                                 color: "white", backgroundColor: "#00B2FF",
                                                 border: 0, margin: "3px 5px 3px 5px"
                                             }}
-                                            onClick={() => {
+                                            onClick={async () => {
+                                                await getAreaUsuarios();
                                                 resetAreasForm();
                                                 getAreas();
-                                                getAreaUsuarios();
                                                 getAreasPorUsuario(usuario.id);
                                             }}>
                                             Áreas

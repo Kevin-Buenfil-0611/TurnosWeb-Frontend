@@ -11,6 +11,8 @@ const URI = 'http://localhost:8000/cajas/';
 const URIareas = 'http://localhost:8000/areas/';
 const URIareacaja = 'http://localhost:8000/areacaja/';
 
+var InfoAreaCaja = []
+
 const CompShowCajas = () => {
 
     //Procedimiento para mostrar todas las areasCajas
@@ -22,6 +24,7 @@ const CompShowCajas = () => {
     const getAreaCajas = async () => {
         const res = await axios.get(URIareacaja)
         setAreaCajas(res.data)
+        InfoAreaCaja = res.data
     }
 
     //Procedimiento para mostrar todas las areasCajas
@@ -167,8 +170,9 @@ const CompShowCajas = () => {
     const [cajaId, setCajaId] = useState();
 
     const getAreasPorCaja = async (caja_id) => {
+
         try {
-            let ListaAreasPerCaja = areacajas.filter(
+            let ListaAreasPerCaja = InfoAreaCaja.filter(
                 areacaja => areacaja.caja_id === caja_id).map(
                     areacaja => areacaja.area_id);
 
@@ -289,8 +293,9 @@ const CompShowCajas = () => {
                                                     color: "white", backgroundColor: "#00B2FF",
                                                     border: 0, margin: "3px 5px 3px 5px"
                                                 }}
-                                                onClick={() => {
-                                                    getAreaCajas();
+                                                onClick={async () => {
+                                                    await getAreaCajas();
+                                                    resetFormMod();
                                                     getAreas();
                                                     getAreasPorCaja(caja.id)
                                                 }}>

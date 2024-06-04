@@ -77,6 +77,7 @@ const Caja = () => {
         }
         const resAreas = await axios.post(`${URIarea}areaUsuario`,
             { listaAreas: ListaDeAreas });
+
         setNombreAreas(resAreas.data);
     };
 
@@ -201,14 +202,14 @@ const Caja = () => {
                         {turnos.length === 0 ? (
                             <div style={{
                                 color: "white", textAlign: "center",
-                                fontSize: "5vh"
+                                fontSize: "3vw"
                             }}>No hay turnos disponibles</div>
                         ) : (
                             turnos.map((turno) => (
                                 <TextoTitulo
                                     key={turno.id}
                                     tamaño="h5"
-                                    texto={`${turno.nombre_area} ${turno.id}`}
+                                    texto={`${turno.nombre_area} ${turno.folio}`}
                                     color="white"
                                 />
                             ))
@@ -220,12 +221,19 @@ const Caja = () => {
                 <div className="col-sm-12 col-md-9">
 
                     {/* Contenedor Principal de la información del turno */}
-                    <div className="d-flex flex-column align-content-center">
+                    <div className="d-flex flex-column align-content-center" >
                         {/* Textos del título */}
-                        <div className="flex-row align-self-center">
+                        <div className="flex-row align-self-center" style={{ maxWidth: '90%' }}>
                             <TextoTitulo tamaño={"h2"} texto="Turno Actual"></TextoTitulo>
                             <TextoTitulo tamaño={"h2"} texto={TextoCajaUsuario}></TextoTitulo>
-                            <TextoTitulo tamaño={"h3"} texto={TextoAreaUsuario}></TextoTitulo>
+                            <h4 style={{
+                                fontWeight: "bold", textAlign: "left",
+                                fontFamily: "Nunito", whiteSpace: "nowrap",
+                                overflow: "hidden", textOverflow: "ellipsis",
+                                overflowWrap: "break-word"
+                            }}>
+                                {TextoAreaUsuario}
+                            </h4>
                         </div>
 
                         {/* Contenedor de la información del turno */}
@@ -234,7 +242,7 @@ const Caja = () => {
                                 {turnoActual ? (
                                     <>
                                         <div style={{ marginTop: 20, marginBottom: 15 }}>
-                                            <TextoTitulo tamaño="h1" texto={`Turno #${turnoActual.id}`} color="white" />
+                                            <TextoTitulo tamaño="h1" texto={`Turno #${turnoActual.folio}`} color="white" />
                                         </div>
                                         <div className="row justify-content-center align-items-center text-center">
                                             <div className="col-sm-12 col-md-6">

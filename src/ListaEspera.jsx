@@ -64,28 +64,24 @@ const ListaEspera = () => {
         const ultimoTurno = turnoNuevo;
         const NumeroDelTurno = (
             <p style={{
-                fontWeight: 'bold',
-                textAlign: 'center',
-                fontSize: '5.5vh',
-                color: 'white'
-            }}>Turno: {ultimoTurno.id}</p>
+                fontWeight: 'bold', textAlign: 'center',
+                fontSize: '5.5vh', color: 'white',
+                overflowWrap: "break-word"
+            }}>Turno: {ultimoTurno.folio}</p>
         );
 
         const DatosDelTurno = (
             <p style={{
-                fontWeight: 'bold',
-                textAlign: 'center',
-                fontSize: '5.5vh',
-                color: 'white'
+                fontWeight: 'bold', textAlign: 'center',
+                fontSize: '5.5vh', color: 'white',
+                overflowWrap: "break-word"
             }}>Área: {ultimoTurno.nombre_area}</p>
         );
 
         const CajaDelTurno = (
             <p style={{
-                fontWeight: 'bold',
-                textAlign: 'center',
-                fontSize: '5.5vh',
-                color: 'white'
+                fontWeight: 'bold', textAlign: 'center',
+                fontSize: '5.5vh', color: 'white',
             }}>Caja: {ultimoTurno.nombre_caja}</p>
         );
 
@@ -144,7 +140,7 @@ const ListaEspera = () => {
                             {turnos ? (
                                 turnos.map((turno) => (
                                     <tr key={turno.id}>
-                                        <th scope="row">{turno.id}</th>
+                                        <th scope="row">{turno.folio}</th>
                                         <td>{turno.nombre_area}</td>
                                         <td>{turno.nombre_caja}</td>
                                     </tr>

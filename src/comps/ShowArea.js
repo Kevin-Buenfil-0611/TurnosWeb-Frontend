@@ -175,7 +175,8 @@ const CompShowAreas = () => {
                             {/* Título del Modal */}
                             <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Crear Área</h1>
                             {/* Botón X de cerrar */}
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                onClick={() => getAreas()} />
                         </div>
                         <div className="modal-body ">
                             <h1 className="modal-title fs-6" id="staticBackdropLabel"
@@ -216,7 +217,8 @@ const CompShowAreas = () => {
                         </div>
                         <div className="modal-footer">
                             {/* Botón de Cerrar */}
-                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal">
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
+                                onClick={() => getAreas()}>
                                 Cerrar</button>
                         </div>
                     </div>
@@ -232,7 +234,8 @@ const CompShowAreas = () => {
                             {/* Título del Modal */}
                             <h1 className="modal-title fs-5" id="staticBackdropLabel">Menú Modificar Área</h1>
                             {/* Botón X de cerrar */}
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                onClick={() => getAreas()} />
                         </div>
                         <div className="modal-body ">
                             <h1 className="modal-title fs-6" id="staticBackdropLabel"
@@ -275,7 +278,8 @@ const CompShowAreas = () => {
                         </div>
                         <div className="modal-footer">
                             {/* Botón de Cerrar */}
-                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal">
+                            <button type="button" className="btn btn-danger" data-bs-dismiss="modal"
+                                onClick={() => getAreas()}>
                                 Cerrar</button>
                         </div>
                     </div>
