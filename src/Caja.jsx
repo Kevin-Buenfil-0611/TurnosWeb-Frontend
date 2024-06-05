@@ -124,23 +124,27 @@ const Caja = () => {
         if (turnoAtendiendo) {
             // Si ya hay un turno siendo atendido, asignarlo a turnoActual
             setTurnoActual(turnoAtendiendo);
+            console.log(turnoAtendiendo)
         } else if (turnoActual) {
             // Ya hay un turno, activar un modal con el mensaje correspondiente
+            console.log(turnoActual)
             onOpen();
         } else {
             // No hay turno actual, utilizar el valor más reciente de turnoActual
             const nuevoTurnoActual = turnos[0];
             if (nuevoTurnoActual) {
-                setTurnoActual(nuevoTurnoActual);
+                console.log(nuevoTurnoActual)
                 // Usa el id del nuevo turnoActual en atendiendoTurno
                 await atendiendoTurno(nuevoTurnoActual.id);
-                getTurnos();
-                getTurnoAtendiendo();
+                await getTurnos();
+                await getTurnoAtendiendo();
+                setTurnoActual(nuevoTurnoActual);
             } else {
                 // No hay nuevos turnos para atender
                 console.log("No hay nuevos turnos disponibles");
             }
         }
+        console.log(turnoActual)
     }
 
     //Procedimiento para poner al turno atendiendo
