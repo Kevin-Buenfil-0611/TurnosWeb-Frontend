@@ -12,6 +12,10 @@ import { Button } from "@nextui-org/react";
 const URI = 'http://localhost:8000/areas/';
 const URITurnos = 'http://localhost:8000/turnos/';
 const URILogin = 'http://localhost:8000/login/comprobarToken';
+const URITicket = 'http://localhost:8000/ticket/imprimir';
+
+var NumeroDeFolio
+var NombreDeArea
 
 const Mostrador = () => {
 
@@ -61,14 +65,28 @@ const Mostrador = () => {
         const res = await axios.get(URI)
         setAreas(res.data)
     }
+
+    // ************* Crear el turno ******************
     const createTurno = async (area_id) => {
         const usuarioCreate = localStorage.getItem("usuario");
         const estatus = "Pendiente"
-        await axios.post(URITurnos, {
+        const res = await axios.post(URITurnos, {
             create_by: usuarioCreate,
             estatus: estatus, fk_idarea: area_id
         });
+
+        NumeroDeFolio = res.data.folio
+        NombreDeArea = res.data.area
     }
+
+    // *************** Imprimir el ticker ***************
+    const imprimirTicket = async (numeroFolio, nombreArea) => {
+        await axios.post(URITicket, {
+            turno: numeroFolio,
+            area: nombreArea
+        });
+    }
+
     function Grid() {
         // Calcula el número de filas y columnas
         const gridSize = Math.ceil(Math.sqrt(areas.length));
@@ -77,7 +95,11 @@ const Mostrador = () => {
                 {areas ? (areas.map((area) => (
                     <Popconfirm title='Crear turno'
                         description="Confirma la creación del turno"
-                        onConfirm={() => createTurno(area.id)}
+                        onConfirm={async () => {
+                            await createTurno(area.id);
+                            imprimirTicket(NumeroDeFolio, NombreDeArea);
+                        }
+                        }
                         icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
                         okButtonProps={{ style: { backgroundColor: '#FA770F', color: 'white' } }}
                     >

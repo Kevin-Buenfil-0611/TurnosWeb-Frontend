@@ -40,7 +40,7 @@ const ReproductorVideo = () => {
     return (
         <div>
             {videos.length === 0 ? (
-                <div>No hay Videos</div>
+                <></>
             ) : (
                 <ReactPlayer
                     url={videos[currentVideoIndex].url}
